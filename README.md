@@ -21,7 +21,7 @@ import (
 	"gitoa.ru/go-4devs/console/output"
 )
 
-func Createuser() *console.Command {
+func CreateUser() *console.Command {
 	return &console.Command{
 		Name: "app:create-user",
 		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
@@ -33,7 +33,7 @@ func Createuser() *console.Command {
 ## Configure command
 
 ```go
-func Createuser() *console.Command {
+func CreateUser() *console.Command {
 	return &console.Command{
         //...
 		Description: "Creates a new user.",
@@ -46,7 +46,7 @@ func Createuser() *console.Command {
 ## Add arguments
 
 ```go
-func Createuser(required bool) *console.Command {
+func CreateUser(required bool) *console.Command {
 	return &console.Command{
         //....
 		Configure: func(ctx context.Context, cfg *input.Definition) error {
@@ -73,14 +73,14 @@ import (
 	"context"
 
 	"gitoa.ru/go-4devs/console"
-	"pkg/command"
+	"gitoa.ru/go-4devs/console/example/pkg/command"
 )
 
 func main() {
 	console.
 		New().
 		Add(
-			command.Createuser(false),
+			command.CreateUser(false),
 		).
 		Execute(context.Background())
 }
@@ -95,7 +95,7 @@ run command `bin/console app:create-user``
 
 The Execute field has access to the output stream to write messages to the console:
 ```go
-func Createuser(required bool) *console.Command {
+func CreateUser(required bool) *console.Command {
 	return &console.Command{
         // ....
 		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
@@ -171,14 +171,15 @@ import (
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
 	"gitoa.ru/go-4devs/console/input/array"
-	"gitoa.ru/go-4devs/console/output/writer"
+	"gitoa.ru/go-4devs/console/output"
 )
 
 func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
-	in := array.New(array.Argument("username", "andrey"))
+	in := input.Array{}
+    in.SetArgument("username","andrey")
 	buf := bytes.Buffer{}
-	out := writer.Buffer(&buf)
+	out := output.Buffer(&buf)
 
 	console.Run(ctx, command.CreateUser(false), in, out)
 
