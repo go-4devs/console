@@ -7,7 +7,7 @@ import (
 )
 
 type Bool struct {
-	Empty
+	empty
 	Val  []bool
 	Flag flag.Flag
 }

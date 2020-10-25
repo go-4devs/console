@@ -10,7 +10,6 @@ import (
 	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/verbosity"
-	"gitoa.ru/go-4devs/console/output/wrap"
 )
 
 const (
@@ -36,7 +35,7 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 	if err := in.Bind(ctx, Default(def)); err != nil {
 		ansi(ctx, in, out).Print(ctx, "<error>\n\n   ", err, "\n</error>\n")
 
-		return showHelp(ctx, cmd, in, wrap.Ansi(out))
+		return showHelp(ctx, cmd, in, output.Ansi(out))
 	}
 
 	out = ansi(ctx, in, out)
@@ -64,13 +63,13 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 func ansi(ctx context.Context, in input.Input, out output.Output) output.Output {
 	switch {
 	case in.Option(ctx, "ansi").Bool():
-		out = wrap.Ansi(out)
+		out = output.Ansi(out)
 	case in.Option(ctx, "no-ansi").Bool():
-		out = wrap.None(out)
+		out = output.None(out)
 	case lookupEnv("NO_COLOR"):
-		out = wrap.None(out)
+		out = output.None(out)
 	default:
-		out = wrap.Ansi(out)
+		out = output.Ansi(out)
 	}
 
 	return out
@@ -85,19 +84,19 @@ func lookupEnv(name string) bool {
 func verbose(ctx context.Context, in input.Input, out output.Output) output.Output {
 	switch {
 	case in.Option(ctx, "quiet").Bool():
-		out = verbosity.Quiet()
+		out = output.Quiet()
 	default:
 		v := in.Option(ctx, "verbose").Bools()
 
 		switch {
 		case len(v) == verboseInfo:
-			out = verbosity.Verb(out, output.VerbosityInfo)
+			out = output.Verbosity(out, verbosity.Info)
 		case len(v) == verboseDebug:
-			out = verbosity.Verb(out, output.VerbosityDebug)
+			out = output.Verbosity(out, verbosity.Debug)
 		case len(v) >= verboseTrace:
-			out = verbosity.Verb(out, output.VerbosityTrace)
+			out = output.Verbosity(out, verbosity.Trace)
 		default:
-			out = verbosity.Verb(out, output.VerbosityNorm)
+			out = output.Verbosity(out, verbosity.Norm)
 		}
 	}
 
@@ -105,8 +104,12 @@ func verbose(ctx context.Context, in input.Input, out output.Output) output.Outp
 }
 
 func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
-	in.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
-	in.SetOption("help", value.New(false))
+	w := &input.Wrap{
+		Input: in,
+	}
+
+	w.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
+	w.SetOption("help", value.New(false))
 
 	if _, err := Find(cmd.Name); errors.Is(err, ErrNotFound) {
 		register(cmd)
@@ -117,7 +120,7 @@ func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Outp
 		return err
 	}
 
-	return Run(ctx, help, in, out)
+	return Run(ctx, help, w, out)
 }
 
 // Default options and argument command.

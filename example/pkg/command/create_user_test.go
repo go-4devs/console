@@ -7,15 +7,16 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/console/input/array"
-	"gitoa.ru/go-4devs/console/output/writer"
+	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/output"
 )
 
 func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
-	in := array.New(array.Argument("username", "andrey"))
+	in := &input.Array{}
+	in.SetArgument("username", "andrey")
 	buf := bytes.Buffer{}
-	out := writer.Buffer(&buf)
+	out := output.Buffer(&buf)
 
 	err := console.Run(ctx, command.CreateUser(false), in, out)
 	if err != nil {

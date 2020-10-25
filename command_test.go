@@ -11,10 +11,8 @@ import (
 	"gitoa.ru/go-4devs/console/example/pkg/command"
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
-	"gitoa.ru/go-4devs/console/input/array"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/writer"
 )
 
 //nolint: gochecknoinits
@@ -91,8 +89,8 @@ func TestChainHandle(t *testing.T) {
 	var cnt int32
 
 	ctx := context.Background()
-	in := array.New()
-	out := writer.Stdout()
+	in := &input.Array{}
+	out := output.Stdout()
 
 	handle := func(ctx context.Context, in input.Input, out output.Output, next console.Action) error {
 		atomic.AddInt32(&cnt, 1)

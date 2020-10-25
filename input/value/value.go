@@ -29,13 +29,13 @@ type Value interface {
 	Times() []time.Time
 }
 
-type AppendValue interface {
+type Append interface {
 	Value
 	Append(string) error
 }
 
 //nolint: gocyclo
-func New(v interface{}) Value {
+func New(v interface{}) Append {
 	switch val := v.(type) {
 	case string:
 		return &String{Val: []string{val}, Flag: flag.String}
@@ -75,18 +75,20 @@ func New(v interface{}) Value {
 		return &Int{Val: val, Flag: flag.Int | flag.Array}
 	case []interface{}:
 		return &Any{Val: val, Flag: flag.Any | flag.Array}
-	case Value:
+	case Append:
 		return val
+	case Value:
+		return &Read{Value: val}
 	default:
 		if v != nil {
 			return &Any{Val: []interface{}{v}, Flag: flag.Any}
 		}
 
-		return &Empty{}
+		return &empty{}
 	}
 }
 
-func ByFlag(f flag.Flag) AppendValue {
+func ByFlag(f flag.Flag) Append {
 	switch {
 	case f.IsInt():
 		return &Int{Flag: f | flag.Int}

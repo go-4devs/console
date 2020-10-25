@@ -99,7 +99,7 @@ func TestNotBlank(t *testing.T) {
 		}
 
 		if ca.empty == nil {
-			ca.empty = &value.Empty{}
+			ca.empty = value.Empty
 		}
 
 		if err := valid(ca.empty); err == nil || !errors.Is(err, validator.ErrNotBlank) {

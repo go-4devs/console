@@ -3,7 +3,7 @@ package value
 import "gitoa.ru/go-4devs/console/input/flag"
 
 type Any struct {
-	Empty
+	empty
 	Val  []interface{}
 	Flag flag.Flag
 }

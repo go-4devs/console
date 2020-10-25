@@ -1,4 +1,4 @@
-package input
+package errs
 
 import (
 	"errors"
@@ -14,6 +14,14 @@ var (
 	ErrAppend         = errors.New("failed append")
 	ErrInvalidName    = errors.New("invalid name")
 )
+
+func New(name, t string, err error) Error {
+	return Error{
+		name: name,
+		t:    t,
+		err:  err,
+	}
+}
 
 type Error struct {
 	name string
@@ -33,7 +41,7 @@ func (o Error) Unwrap() error {
 	return o.err
 }
 
-func ErrorOption(name string, err error) Error {
+func Option(name string, err error) Error {
 	return Error{
 		name: name,
 		err:  err,
@@ -41,7 +49,7 @@ func ErrorOption(name string, err error) Error {
 	}
 }
 
-func ErrorArgument(name string, err error) Error {
+func Argument(name string, err error) Error {
 	return Error{
 		name: name,
 		err:  err,

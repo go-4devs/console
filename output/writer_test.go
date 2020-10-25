@@ -1,4 +1,4 @@
-package writer_test
+package output_test
 
 import (
 	"bytes"
@@ -6,13 +6,12 @@ import (
 	"testing"
 
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/writer"
 )
 
 func TestNew(t *testing.T) {
 	ctx := context.Background()
 	buf := bytes.Buffer{}
-	wr := writer.New(&buf, writer.String)
+	wr := output.New(&buf, output.FormatString)
 
 	cases := map[string]struct {
 		ex string

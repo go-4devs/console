@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-var _ AppendValue = (*Read)(nil)
+var _ Append = (*Read)(nil)
 
 var (
 	ErrAppendRead  = errors.New("invalid append data to read value")

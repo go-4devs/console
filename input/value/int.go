@@ -7,7 +7,7 @@ import (
 )
 
 type Int struct {
-	Empty
+	empty
 	Val  []int
 	Flag flag.Flag
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Duration struct {
-	Empty
+	empty
 	Val  []time.Duration
 	Flag flag.Flag
 }

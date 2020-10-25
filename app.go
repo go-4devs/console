@@ -5,10 +5,8 @@ import (
 	"os"
 
 	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/argv"
 	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/writer"
 )
 
 // WithOutput sets outpu,^ by default output os.Stdout.
@@ -42,7 +40,7 @@ func WithExit(f func(int)) func(*App) {
 // New creates and configure new console app.
 func New(opts ...func(*App)) *App {
 	a := &App{
-		out:  writer.Stdout(),
+		out:  output.Stdout(),
 		exit: os.Exit,
 	}
 
@@ -64,7 +62,9 @@ func New(opts ...func(*App)) *App {
 			skip = 1
 		}
 
-		a.in = argv.New(os.Args[skip:])
+		a.in = &input.Argv{
+			Args: os.Args[skip:],
+		}
 	}
 
 	return a
@@ -130,10 +130,12 @@ func (a *App) list(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	in := &input.Wrap{
+		Input: a.in,
+	}
+	in.SetArgument("command_name", value.New(CommandList))
 
-	a.in.SetArgument("command_name", value.New(CommandList))
-
-	return Run(ctx, cmd, a.in, a.out)
+	return Run(ctx, cmd, in, a.out)
 }
 
 func (a *App) printError(ctx context.Context, err error) {

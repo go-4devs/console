@@ -7,7 +7,7 @@ import (
 )
 
 type Int64 struct {
-	Empty
+	empty
 	Val  []int64
 	Flag flag.Flag
 }

@@ -4,84 +4,90 @@ import (
 	"time"
 )
 
-type Empty struct{}
+var Empty = &empty{}
 
-func (e *Empty) Append(string) error {
+func IsEmpty(v Value) bool {
+	return v == Empty
+}
+
+type empty struct{}
+
+func (e *empty) Append(string) error {
 	return ErrAppendEmpty
 }
 
-func (e *Empty) String() string {
+func (e *empty) String() string {
 	return ""
 }
 
-func (e *Empty) Int() int {
+func (e *empty) Int() int {
 	return 0
 }
 
-func (e *Empty) Int64() int64 {
+func (e *empty) Int64() int64 {
 	return 0
 }
 
-func (e *Empty) Uint() uint {
+func (e *empty) Uint() uint {
 	return 0
 }
 
-func (e *Empty) Uint64() uint64 {
+func (e *empty) Uint64() uint64 {
 	return 0
 }
 
-func (e *Empty) Float64() float64 {
+func (e *empty) Float64() float64 {
 	return 0
 }
 
-func (e *Empty) Bool() bool {
+func (e *empty) Bool() bool {
 	return false
 }
 
-func (e *Empty) Duration() time.Duration {
+func (e *empty) Duration() time.Duration {
 	return 0
 }
 
-func (e *Empty) Time() time.Time {
+func (e *empty) Time() time.Time {
 	return time.Time{}
 }
 
-func (e *Empty) Strings() []string {
+func (e *empty) Strings() []string {
 	return nil
 }
 
-func (e *Empty) Ints() []int {
+func (e *empty) Ints() []int {
 	return nil
 }
 
-func (e *Empty) Int64s() []int64 {
+func (e *empty) Int64s() []int64 {
 	return nil
 }
 
-func (e *Empty) Uints() []uint {
+func (e *empty) Uints() []uint {
 	return nil
 }
 
-func (e *Empty) Uint64s() []uint64 {
+func (e *empty) Uint64s() []uint64 {
 	return nil
 }
 
-func (e *Empty) Float64s() []float64 {
+func (e *empty) Float64s() []float64 {
 	return nil
 }
 
-func (e *Empty) Bools() []bool {
+func (e *empty) Bools() []bool {
 	return nil
 }
 
-func (e *Empty) Durations() []time.Duration {
+func (e *empty) Durations() []time.Duration {
 	return nil
 }
 
-func (e *Empty) Times() []time.Time {
+func (e *empty) Times() []time.Time {
 	return nil
 }
 
-func (e *Empty) Any() interface{} {
+func (e *empty) Any() interface{} {
 	return nil
 }

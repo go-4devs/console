@@ -3,7 +3,7 @@ package value
 import "gitoa.ru/go-4devs/console/input/flag"
 
 type String struct {
-	Empty
+	empty
 	Val  []string
 	Flag flag.Flag
 }

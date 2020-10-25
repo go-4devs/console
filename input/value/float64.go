@@ -7,7 +7,7 @@ import (
 )
 
 type Float64 struct {
-	Empty
+	empty
 	Val  []float64
 	Flag flag.Flag
 }

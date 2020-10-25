@@ -2,6 +2,7 @@ package input
 
 import (
 	"gitoa.ru/go-4devs/console/input/argument"
+	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/option"
 )
 
@@ -66,7 +67,7 @@ func (d *Definition) SetArguments(args ...argument.Argument) *Definition {
 
 func (d *Definition) Argument(pos int) (argument.Argument, error) {
 	if len(d.posArgs) == 0 {
-		return argument.Argument{}, ErrNoArgs
+		return argument.Argument{}, errs.ErrNoArgs
 	}
 
 	lastPos := len(d.posArgs) - 1
@@ -76,7 +77,7 @@ func (d *Definition) Argument(pos int) (argument.Argument, error) {
 			return arg, nil
 		}
 
-		return argument.Argument{}, ErrToManyArgs
+		return argument.Argument{}, errs.ErrToManyArgs
 	}
 
 	return d.args[d.posArgs[pos]], nil
@@ -85,7 +86,7 @@ func (d *Definition) Argument(pos int) (argument.Argument, error) {
 func (d *Definition) ShortOption(short string) (option.Option, error) {
 	name, ok := d.short[short]
 	if !ok {
-		return option.Option{}, ErrNotFound
+		return option.Option{}, errs.ErrNotFound
 	}
 
 	return d.Option(name)
@@ -96,5 +97,5 @@ func (d *Definition) Option(name string) (option.Option, error) {
 		return opt, nil
 	}
 
-	return option.Option{}, ErrNotFound
+	return option.Option{}, errs.ErrNotFound
 }

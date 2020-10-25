@@ -5,16 +5,16 @@ import (
 	"fmt"
 
 	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/input/array"
+	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/output/writer"
+	"gitoa.ru/go-4devs/console/output"
 )
 
 func ExampleRun() {
 	cmd := Command()
 	ctx := context.Background()
-	out := writer.Stdout()
-	in := array.New()
+	out := output.Stdout()
+	in := &input.Array{}
 
 	err := console.Run(ctx, cmd, in, out)
 	fmt.Println("err:", err)
@@ -29,7 +29,7 @@ func ExampleRun() {
 func ExampleExecute() {
 	cmd := Command()
 	ctx := context.Background()
-	in := array.New()
+	in := &input.Array{}
 
 	// Run command: ./bin "argument value" -b --string="same value" --string="other value"
 	in.SetOption("bool", value.New(true))
