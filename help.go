@@ -6,13 +6,13 @@ import (
 	"os"
 	"strings"
 
-	"gitoa.ru/go-4devs/console/descriptor"
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/output"
+	"gitoa.ru/go-4devs/console/output/descriptor"
 )
 
 //nolint: gochecknoinits
