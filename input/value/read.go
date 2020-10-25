@@ -1,17 +1,20 @@
 package value
 
 import (
-	"fmt"
-
-	"gitoa.ru/go-4devs/console/input"
+	"errors"
 )
 
-var _ input.AppendValue = (*Read)(nil)
+var _ AppendValue = (*Read)(nil)
+
+var (
+	ErrAppendRead  = errors.New("invalid append data to read value")
+	ErrAppendEmpty = errors.New("invalid apped data to empty value")
+)
 
 type Read struct {
-	input.Value
+	Value
 }
 
 func (r *Read) Append(string) error {
-	return fmt.Errorf("%w: read value", input.ErrInvalidName)
+	return ErrAppendRead
 }

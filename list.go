@@ -7,9 +7,10 @@ import (
 
 	"gitoa.ru/go-4devs/console/descriptor"
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/option"
+	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/validator"
 )
 
 const defaultLenNamespace = 2
@@ -92,10 +93,10 @@ You can also output the information in other formats by using the <comment>--for
 			formats := descriptor.Descriptors()
 			config.
 				SetArguments(
-					input.NewArgument("namespace", "The namespace name"),
+					argument.New("namespace", "The namespace name"),
 				).
 				SetOptions(
-					input.NewOption(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
+					option.New(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
 						option.Default(formats[0]),
 						option.Valid(

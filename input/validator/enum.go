@@ -1,9 +1,9 @@
 package validator
 
-import "gitoa.ru/go-4devs/console/input"
+import "gitoa.ru/go-4devs/console/input/value"
 
-func Enum(enum ...string) func(input.Value) error {
-	return func(in input.Value) error {
+func Enum(enum ...string) func(value.Value) error {
+	return func(in value.Value) error {
 		v := in.String()
 		for _, e := range enum {
 			if e == v {

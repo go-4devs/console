@@ -5,90 +5,90 @@ import (
 	"testing"
 	"time"
 
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/validator"
 )
 
 func TestNotBlank(t *testing.T) {
 	cases := map[string]struct {
-		flag  input.Flag
-		value input.Value
-		empty input.Value
+		flag  flag.Flag
+		value value.Value
+		empty value.Value
 	}{
-		"any": {flag: input.ValueAny, value: value.New(float32(1))},
+		"any": {flag: flag.Any, value: value.New(float32(1))},
 		"array int": {
-			flag:  input.ValueInt | input.ValueArray,
+			flag:  flag.Int | flag.Array,
 			value: value.New([]int{1}),
 			empty: value.New([]int{10, 20, 0}),
 		},
 		"array int64": {
-			flag:  input.ValueInt64 | input.ValueArray,
+			flag:  flag.Int64 | flag.Array,
 			value: value.New([]int64{1}),
 			empty: value.New([]int64{0}),
 		},
 		"array uint": {
-			flag:  input.ValueUint | input.ValueArray,
+			flag:  flag.Uint | flag.Array,
 			value: value.New([]uint{1}),
 			empty: value.New([]uint{1, 0}),
 		},
 		"array uint64": {
-			flag:  input.ValueUint64 | input.ValueArray,
+			flag:  flag.Uint64 | flag.Array,
 			value: value.New([]uint64{1}),
 			empty: value.New([]uint64{0}),
 		},
 		"array float64": {
-			flag:  input.ValueFloat64 | input.ValueArray,
+			flag:  flag.Float64 | flag.Array,
 			value: value.New([]float64{0.2}),
 			empty: value.New([]float64{0}),
 		},
 		"array bool": {
-			flag:  input.ValueBool | input.ValueArray,
+			flag:  flag.Bool | flag.Array,
 			value: value.New([]bool{true, false}),
 			empty: value.New([]bool{}),
 		},
 		"array duration": {
-			flag:  input.ValueDuration | input.ValueArray,
+			flag:  flag.Duration | flag.Array,
 			value: value.New([]time.Duration{time.Second}),
 			empty: value.New([]time.Duration{time.Second, 0}),
 		},
 		"array time": {
-			flag:  input.ValueTime | input.ValueArray,
+			flag:  flag.Time | flag.Array,
 			value: value.New([]time.Time{time.Now()}),
 			empty: value.New([]time.Time{{}, time.Now()}),
 		},
 		"array string": {
-			flag:  input.ValueArray,
+			flag:  flag.Array,
 			value: value.New([]string{"value"}),
 			empty: value.New([]string{""}),
 		},
 		"int": {
-			flag:  input.ValueInt,
+			flag:  flag.Int,
 			value: value.New(int(1)),
 		},
 		"int64": {
-			flag:  input.ValueInt64,
+			flag:  flag.Int64,
 			value: value.New(int64(2)),
 		},
 		"uint": {
-			flag:  input.ValueUint,
+			flag:  flag.Uint,
 			value: value.New(uint(1)),
 			empty: value.New([]uint{1}),
 		},
 		"uint64": {
-			flag:  input.ValueUint64,
+			flag:  flag.Uint64,
 			value: value.New(uint64(10)),
 		},
 		"float64": {
-			flag:  input.ValueFloat64,
+			flag:  flag.Float64,
 			value: value.New(float64(.00001)),
 		},
 		"duration": {
-			flag:  input.ValueDuration,
+			flag:  flag.Duration,
 			value: value.New(time.Minute),
 			empty: value.New("same string"),
 		},
-		"time":   {flag: input.ValueTime, value: value.New(time.Now())},
+		"time":   {flag: flag.Time, value: value.New(time.Now())},
 		"string": {value: value.New("string"), empty: value.New("")},
 	}
 

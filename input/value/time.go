@@ -3,13 +3,13 @@ package value
 import (
 	"time"
 
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 )
 
 type Time struct {
 	Empty
 	Val  []time.Time
-	Flag input.Flag
+	Flag flag.Flag
 }
 
 func (t *Time) Append(in string) error {
@@ -36,7 +36,7 @@ func (t *Time) Times() []time.Time {
 }
 
 func (t *Time) Amy() interface{} {
-	if t.Flag&input.ValueArray > 0 {
+	if t.Flag.IsArray() {
 		return t.Times()
 	}
 

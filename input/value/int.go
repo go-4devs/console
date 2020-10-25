@@ -3,13 +3,13 @@ package value
 import (
 	"strconv"
 
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 )
 
 type Int struct {
 	Empty
 	Val  []int
-	Flag input.Flag
+	Flag flag.Flag
 }
 
 func (i *Int) Append(in string) error {
@@ -36,7 +36,7 @@ func (i *Int) Ints() []int {
 }
 
 func (i *Int) Any() interface{} {
-	if i.Flag&input.ValueArray > 0 {
+	if i.Flag.IsArray() {
 		return i.Ints()
 	}
 

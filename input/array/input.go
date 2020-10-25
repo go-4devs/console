@@ -25,8 +25,8 @@ func Option(name string, v interface{}) func(*Input) {
 
 func New(opts ...func(*Input)) *wrap.Input {
 	i := &Input{
-		args: make(map[string]input.Value),
-		opt:  make(map[string]input.Value),
+		args: make(map[string]value.Value),
+		opt:  make(map[string]value.Value),
 	}
 
 	for _, opt := range opts {
@@ -37,12 +37,12 @@ func New(opts ...func(*Input)) *wrap.Input {
 }
 
 type Input struct {
-	args map[string]input.Value
-	opt  map[string]input.Value
+	args map[string]value.Value
+	opt  map[string]value.Value
 	mu   sync.Mutex
 }
 
-func (i *Input) ReadOption(_ context.Context, name string) (input.Value, error) {
+func (i *Input) ReadOption(_ context.Context, name string) (value.Value, error) {
 	if o, has := i.opt[name]; has {
 		return o, nil
 	}
@@ -56,13 +56,13 @@ func (i *Input) HasOption(name string) bool {
 	return has
 }
 
-func (i *Input) SetOption(name string, val input.Value) {
+func (i *Input) SetOption(name string, val value.Value) {
 	i.mu.Lock()
 	i.opt[name] = val
 	i.mu.Unlock()
 }
 
-func (i *Input) ReadArgument(_ context.Context, name string) (input.Value, error) {
+func (i *Input) ReadArgument(_ context.Context, name string) (value.Value, error) {
 	if a, has := i.args[name]; has {
 		return a, nil
 	}
@@ -76,7 +76,7 @@ func (i *Input) HasArgument(name string) bool {
 	return has
 }
 
-func (i *Input) SetArgument(name string, val input.Value) {
+func (i *Input) SetArgument(name string, val value.Value) {
 	i.mu.Lock()
 	i.args[name] = val
 	i.mu.Unlock()

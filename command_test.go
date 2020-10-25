@@ -10,6 +10,7 @@ import (
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/array"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/output"
@@ -39,10 +40,10 @@ func Command() *console.Command {
 		Configure: func(ctx context.Context, def *input.Definition) error {
 			def.
 				SetArguments(
-					input.NewArgument("test_argument", "test argument"),
+					argument.New("test_argument", "test argument"),
 				).
 				SetOptions(
-					input.NewOption("string", "array string", option.Array),
+					option.New("string", "array string", option.Array),
 					option.Bool("bool", "test bool option"),
 					option.Duration("duration", "test duration with default", option.Default(time.Second)),
 				)

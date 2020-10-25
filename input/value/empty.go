@@ -1,16 +1,13 @@
 package value
 
 import (
-	"fmt"
 	"time"
-
-	"gitoa.ru/go-4devs/console/input"
 )
 
 type Empty struct{}
 
 func (e *Empty) Append(string) error {
-	return fmt.Errorf("%w: in empty value", input.ErrInvalidName)
+	return ErrAppendEmpty
 }
 
 func (e *Empty) String() string {

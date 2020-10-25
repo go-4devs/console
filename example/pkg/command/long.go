@@ -6,9 +6,10 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/option"
+	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/validator"
 )
 
 const defaultTimeout = time.Second * 30
@@ -41,7 +42,7 @@ func Long() *console.Command {
 			def.SetOptions(option.Duration("timeout", "set duration run command",
 				option.Default(defaultTimeout),
 				option.Short("t"),
-				option.Valid(validator.NotBlank(input.ValueDuration)),
+				option.Valid(validator.NotBlank(flag.Duration)),
 			))
 
 			return nil

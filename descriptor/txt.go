@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -76,36 +78,36 @@ func (t *txt) Commands(ctx context.Context, out output.Output, cmds Commands) er
 	return nil
 }
 
-func txtDefaultArray(val input.Value, flag input.Flag) string {
-	st := val.Strings()
+func txtDefaultArray(v value.Value, f flag.Flag) string {
+	st := v.Strings()
 
 	switch {
-	case flag.IsInt():
-		for _, i := range val.Ints() {
+	case f.IsInt():
+		for _, i := range v.Ints() {
 			st = append(st, strconv.Itoa(i))
 		}
-	case flag.IsInt64():
-		for _, i := range val.Int64s() {
+	case f.IsInt64():
+		for _, i := range v.Int64s() {
 			st = append(st, strconv.FormatInt(i, 10))
 		}
-	case flag.IsUint():
-		for _, u := range val.Uints() {
+	case f.IsUint():
+		for _, u := range v.Uints() {
 			st = append(st, strconv.FormatUint(uint64(u), 10))
 		}
-	case flag.IsUint64():
-		for _, u := range val.Uint64s() {
+	case f.IsUint64():
+		for _, u := range v.Uint64s() {
 			st = append(st, strconv.FormatUint(u, 10))
 		}
-	case flag.IsFloat64():
-		for _, f := range val.Float64s() {
+	case f.IsFloat64():
+		for _, f := range v.Float64s() {
 			st = append(st, strconv.FormatFloat(f, 'g', -1, 64))
 		}
-	case flag.IsDuration():
-		for _, d := range val.Durations() {
+	case f.IsDuration():
+		for _, d := range v.Durations() {
 			st = append(st, d.String())
 		}
-	case flag.IsTime():
-		for _, d := range val.Times() {
+	case f.IsTime():
+		for _, d := range v.Times() {
 			st = append(st, d.Format(time.RFC3339))
 		}
 	}
@@ -113,32 +115,32 @@ func txtDefaultArray(val input.Value, flag input.Flag) string {
 	return strings.Join(st, ",")
 }
 
-func txtDefault(val input.Value, flag input.Flag) []byte {
+func txtDefault(v value.Value, f flag.Flag) []byte {
 	var buf bytes.Buffer
 
 	buf.WriteString("<comment> [default: ")
 
 	switch {
-	case flag.IsArray():
-		buf.WriteString(txtDefaultArray(val, flag))
-	case flag.IsInt():
-		buf.WriteString(strconv.Itoa(val.Int()))
-	case flag.IsInt64():
-		buf.WriteString(strconv.FormatInt(val.Int64(), 10))
-	case flag.IsUint():
-		buf.WriteString(strconv.FormatUint(uint64(val.Uint()), 10))
-	case flag.IsUint64():
-		buf.WriteString(strconv.FormatUint(val.Uint64(), 10))
-	case flag.IsFloat64():
-		buf.WriteString(strconv.FormatFloat(val.Float64(), 'g', -1, 64))
-	case flag.IsDuration():
-		buf.WriteString(val.Duration().String())
-	case flag.IsTime():
-		buf.WriteString(val.Time().Format(time.RFC3339))
-	case flag.IsAny():
-		buf.WriteString(fmt.Sprint(val.Any()))
+	case f.IsArray():
+		buf.WriteString(txtDefaultArray(v, f))
+	case f.IsInt():
+		buf.WriteString(strconv.Itoa(v.Int()))
+	case f.IsInt64():
+		buf.WriteString(strconv.FormatInt(v.Int64(), 10))
+	case f.IsUint():
+		buf.WriteString(strconv.FormatUint(uint64(v.Uint()), 10))
+	case f.IsUint64():
+		buf.WriteString(strconv.FormatUint(v.Uint64(), 10))
+	case f.IsFloat64():
+		buf.WriteString(strconv.FormatFloat(v.Float64(), 'g', -1, 64))
+	case f.IsDuration():
+		buf.WriteString(v.Duration().String())
+	case f.IsTime():
+		buf.WriteString(v.Time().Format(time.RFC3339))
+	case f.IsAny():
+		buf.WriteString(fmt.Sprint(v.Any()))
 	default:
-		buf.WriteString(val.String())
+		buf.WriteString(v.String())
 	}
 
 	buf.WriteString("]</comment>")

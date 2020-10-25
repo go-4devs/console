@@ -1,11 +1,11 @@
 package value
 
-import "gitoa.ru/go-4devs/console/input"
+import "gitoa.ru/go-4devs/console/input/flag"
 
 type String struct {
 	Empty
 	Val  []string
-	Flag input.Flag
+	Flag flag.Flag
 }
 
 func (s *String) Append(in string) error {

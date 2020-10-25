@@ -1,6 +1,11 @@
-package input
+package argument
 
-func NewArgument(name, description string, opts ...func(*Argument)) Argument {
+import (
+	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/value"
+)
+
+func New(name, description string, opts ...func(*Argument)) Argument {
 	a := Argument{
 		Name:        name,
 		Description: description,
@@ -16,9 +21,9 @@ func NewArgument(name, description string, opts ...func(*Argument)) Argument {
 type Argument struct {
 	Name        string
 	Description string
-	Default     Value
-	Flag        Flag
-	Valid       []func(Value) error
+	Default     value.Value
+	Flag        flag.Flag
+	Valid       []func(value.Value) error
 }
 
 func (a Argument) HasDefault() bool {
@@ -37,12 +42,16 @@ func (a Argument) IsArray() bool {
 	return a.Flag.IsArray()
 }
 
-func (a Argument) Validate(v Value) error {
+func (a Argument) Validate(v value.Value) error {
 	for _, valid := range a.Valid {
 		if err := valid(v); err != nil {
-			return ErrorArgument(a.Name, err)
+			return Error(a.Name, err)
 		}
 	}
 
 	return nil
+}
+
+func Error(name string, err error) error {
+	return err
 }

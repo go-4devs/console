@@ -15,7 +15,7 @@ func CreateUser(required bool) *console.Command {
 		Description: "Creates a new user.",
 		Help:        "This command allows you to create a user...",
 		Configure: func(ctx context.Context, cfg *input.Definition) error {
-			var opts []func(*input.Argument)
+			var opts []func(*argument.Argument)
 			if required {
 				opts = append(opts, argument.Required)
 			}

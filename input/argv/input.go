@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/input/wrap"
 )
@@ -24,8 +25,8 @@ func WithErrorHandle(h func(error) error) func(*Input) {
 func New(args []string, opts ...func(*Input)) *wrap.Input {
 	i := &Input{
 		args:      args,
-		arguments: make(map[string]input.AppendValue),
-		options:   make(map[string]input.AppendValue),
+		arguments: make(map[string]value.AppendValue),
+		options:   make(map[string]value.AppendValue),
 		errorHandle: func(err error) error {
 			return err
 		},
@@ -40,13 +41,13 @@ func New(args []string, opts ...func(*Input)) *wrap.Input {
 
 type Input struct {
 	args        []string
-	arguments   map[string]input.AppendValue
-	options     map[string]input.AppendValue
+	arguments   map[string]value.AppendValue
+	options     map[string]value.AppendValue
 	mu          sync.RWMutex
 	errorHandle func(error) error
 }
 
-func (i *Input) ReadOption(ctx context.Context, name string) (input.Value, error) {
+func (i *Input) ReadOption(ctx context.Context, name string) (value.Value, error) {
 	if v, ok := i.options[name]; ok {
 		return v, nil
 	}
@@ -54,14 +55,14 @@ func (i *Input) ReadOption(ctx context.Context, name string) (input.Value, error
 	return nil, input.ErrNotFound
 }
 
-func (i *Input) SetOption(name string, val input.Value) {
+func (i *Input) SetOption(name string, val value.Value) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 
 	i.options[name] = &value.Read{Value: val}
 }
 
-func (i *Input) ReadArgument(ctx context.Context, name string) (input.Value, error) {
+func (i *Input) ReadArgument(ctx context.Context, name string) (value.Value, error) {
 	if v, ok := i.arguments[name]; ok {
 		return v, nil
 	}
@@ -69,7 +70,7 @@ func (i *Input) ReadArgument(ctx context.Context, name string) (input.Value, err
 	return nil, input.ErrNotFound
 }
 
-func (i *Input) SetArgument(name string, val input.Value) {
+func (i *Input) SetArgument(name string, val value.Value) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 
@@ -129,11 +130,11 @@ func (i *Input) parseLongOption(arg string, def *input.Definition) error {
 	return i.appendOption(name, value, opt)
 }
 
-func (i *Input) appendOption(name string, data *string, opt input.Option) error {
+func (i *Input) appendOption(name string, data *string, opt option.Option) error {
 	v, ok := i.options[name]
 
 	if ok && !opt.IsArray() {
-		return fmt.Errorf("%w: got: array, expect: %s", input.ErrUnexpectedType, input.Type(opt.Flag))
+		return fmt.Errorf("%w: got: array, expect: %s", input.ErrUnexpectedType, opt.Flag.Type())
 	}
 
 	var val string

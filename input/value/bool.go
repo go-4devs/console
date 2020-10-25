@@ -3,13 +3,13 @@ package value
 import (
 	"strconv"
 
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 )
 
 type Bool struct {
 	Empty
 	Val  []bool
-	Flag input.Flag
+	Flag flag.Flag
 }
 
 func (b *Bool) Append(in string) error {
@@ -36,7 +36,7 @@ func (b *Bool) Bools() []bool {
 }
 
 func (b *Bool) Any() interface{} {
-	if b.Flag&input.ValueArray > 0 {
+	if b.Flag.IsArray() {
 		return b.Bools()
 	}
 

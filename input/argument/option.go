@@ -1,26 +1,26 @@
 package argument
 
 import (
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/value"
 )
 
-func Required(a *input.Argument) {
-	a.Flag |= input.ValueRequired
+func Required(a *Argument) {
+	a.Flag |= flag.Required
 }
 
-func Default(v interface{}) func(*input.Argument) {
-	return func(a *input.Argument) {
+func Default(v interface{}) func(*Argument) {
+	return func(a *Argument) {
 		a.Default = value.New(v)
 	}
 }
 
-func Flag(flag input.Flag) func(*input.Argument) {
-	return func(a *input.Argument) {
+func Flag(flag flag.Flag) func(*Argument) {
+	return func(a *Argument) {
 		a.Flag = flag
 	}
 }
 
-func Array(a *input.Argument) {
-	a.Flag |= input.ValueArray
+func Array(a *Argument) {
+	a.Flag |= flag.Array
 }

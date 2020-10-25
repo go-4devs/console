@@ -9,9 +9,10 @@ import (
 	"gitoa.ru/go-4devs/console/descriptor"
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/option"
+	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/validator"
 )
 
 //nolint: gochecknoinits
@@ -73,14 +74,14 @@ To display the list of available commands, please use the <info>list</info> comm
 			formats := descriptor.Descriptors()
 			config.
 				SetArguments(
-					input.NewArgument(HelpArgumentCommandName, "The command name", argument.Default("help")),
+					argument.New(HelpArgumentCommandName, "The command name", argument.Default("help")),
 				).
 				SetOptions(
-					input.NewOption(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
+					option.New(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
 						option.Default(formats[0]),
 						option.Valid(
-							validator.NotBlank(input.ValueString),
+							validator.NotBlank(flag.String),
 							validator.Enum(formats...),
 						),
 					),

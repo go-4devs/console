@@ -16,8 +16,8 @@ func Args() *console.Command {
 		Configure: func(ctx context.Context, def *input.Definition) error {
 			def.SetOptions(
 				option.Bool("foo", "foo option", option.Short("f")),
-				input.NewOption("bar", "required bar option", option.Required, option.Short("b")),
-				input.NewOption("cat", "cat option", option.Short("c")),
+				option.New("bar", "required bar option", option.Required, option.Short("b")),
+				option.New("cat", "cat option", option.Short("c")),
 			)
 
 			return nil

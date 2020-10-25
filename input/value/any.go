@@ -1,11 +1,11 @@
 package value
 
-import "gitoa.ru/go-4devs/console/input"
+import "gitoa.ru/go-4devs/console/input/flag"
 
 type Any struct {
 	Empty
 	Val  []interface{}
-	Flag input.Flag
+	Flag flag.Flag
 }
 
 func (a *Any) Any() interface{} {

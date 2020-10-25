@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/validator"
 )
 
 func TestValid(t *testing.T) {
@@ -14,7 +14,7 @@ func TestValid(t *testing.T) {
 	invalidValue := value.New([]string{"one"})
 
 	valid := validator.Valid(
-		validator.NotBlank(input.ValueString),
+		validator.NotBlank(flag.String),
 		validator.Enum("one", "two"),
 	)
 

@@ -12,7 +12,7 @@ type Input struct {
 	input.ReadInput
 }
 
-func (i *Input) Option(ctx context.Context, name string) input.Value {
+func (i *Input) Option(ctx context.Context, name string) value.Value {
 	if v, err := i.ReadOption(ctx, name); err == nil {
 		return v
 	}
@@ -20,7 +20,7 @@ func (i *Input) Option(ctx context.Context, name string) input.Value {
 	return &value.Empty{}
 }
 
-func (i *Input) Argument(ctx context.Context, name string) input.Value {
+func (i *Input) Argument(ctx context.Context, name string) value.Value {
 	if v, err := i.ReadArgument(ctx, name); err == nil {
 		return v
 	}
@@ -38,10 +38,6 @@ func (i *Input) Bind(ctx context.Context, def *input.Definition) error {
 	}
 
 	return i.bindOptions(ctx, def)
-}
-
-func (i *Input) build(ctx context.Context) error {
-	return nil
 }
 
 func (i *Input) bindOptions(ctx context.Context, def *input.Definition) error {

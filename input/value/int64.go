@@ -3,13 +3,13 @@ package value
 import (
 	"strconv"
 
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 )
 
 type Int64 struct {
 	Empty
 	Val  []int64
-	Flag input.Flag
+	Flag flag.Flag
 }
 
 func (i *Int64) Int64() int64 {
@@ -25,7 +25,7 @@ func (i *Int64) Int64s() []int64 {
 }
 
 func (i *Int64) Any() interface{} {
-	if i.Flag&input.ValueArray > 0 {
+	if i.Flag.IsArray() {
 		return i.Int64s()
 	}
 
