@@ -1,5 +1,11 @@
 # Console
 
+
+[![Build Status](https://drone.gitoa.ru/api/badges/go-4devs/console/status.svg)](https://drone.gitoa.ru/go-4devs/console)
+[![Go Report Card](https://goreportcard.com/badge/gitoa.ru/go-4devs/console)](https://goreportcard.com/report/gitoa.ru/go-4devs/console)
+[![GoDoc](https://godoc.org/gitoa.ru/go-4devs/console?status.svg)](http://godoc.org/gitoa.ru/go-4devs/console)
+
+
 ## Creating a Command
 
 Commands are defined in struct extending `pkg/command/create_user.go`. For example, you may want a command to create a user:
