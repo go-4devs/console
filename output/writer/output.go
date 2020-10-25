@@ -11,6 +11,8 @@ import (
 	"gitoa.ru/go-4devs/console/output"
 )
 
+const newline = "\n"
+
 func Stderr() output.Output {
 	return New(os.Stderr, String)
 }
@@ -25,13 +27,12 @@ func Buffer(buf *bytes.Buffer) output.Output {
 
 func String(_ output.Verbosity, msg string, kv ...output.KeyValue) string {
 	if len(kv) > 0 {
-		newline := ""
-		if msg[len(msg)-1:] == "\n" {
-			newline = "\n"
+		nline := ""
+		if msg[len(msg)-1:] == newline {
+			nline = newline
 		}
 
-		return "msg=\"" + strings.TrimSpace(msg) + "\", " + output.KeyValues(kv).String() + newline
-
+		return "msg=\"" + strings.TrimSpace(msg) + "\", " + output.KeyValues(kv).String() + nline
 	}
 
 	return msg

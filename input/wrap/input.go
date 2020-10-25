@@ -40,6 +40,10 @@ func (i *Input) Bind(ctx context.Context, def *input.Definition) error {
 	return i.bindOptions(ctx, def)
 }
 
+func (i *Input) build(ctx context.Context) error {
+	return nil
+}
+
 func (i *Input) bindOptions(ctx context.Context, def *input.Definition) error {
 	for _, name := range def.Options() {
 		opt, err := def.Option(name)

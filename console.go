@@ -25,7 +25,7 @@ func Execute(ctx context.Context, cmd *Command, opts ...func(*App)) {
 	New(opts...).exec(ctx, cmd)
 }
 
-// Run current command by input and output/
+// Run current command by input and output.
 func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
 	def := input.NewDefinition()
 
