@@ -19,77 +19,77 @@ const (
 	Any                       // any
 )
 
-func (f Flag) With(v Flag) Flag {
-	return f | v
+func (i Flag) With(v Flag) Flag {
+	return i | v
 }
 
-func (f Flag) IsString() bool {
-	return f|Required|Array^Required^Array == 0
+func (i Flag) IsString() bool {
+	return i|Required|Array^Required^Array == 0
 }
 
-func (f Flag) IsRequired() bool {
-	return f&Required > 0
+func (i Flag) IsRequired() bool {
+	return i&Required > 0
 }
 
-func (f Flag) IsArray() bool {
-	return f&Array > 0
+func (i Flag) IsArray() bool {
+	return i&Array > 0
 }
 
-func (f Flag) IsInt() bool {
-	return f&Int > 0
+func (i Flag) IsInt() bool {
+	return i&Int > 0
 }
 
-func (f Flag) IsInt64() bool {
-	return f&Int64 > 0
+func (i Flag) IsInt64() bool {
+	return i&Int64 > 0
 }
 
-func (f Flag) IsUint() bool {
-	return f&Uint > 0
+func (i Flag) IsUint() bool {
+	return i&Uint > 0
 }
 
-func (f Flag) IsUint64() bool {
-	return f&Uint64 > 0
+func (i Flag) IsUint64() bool {
+	return i&Uint64 > 0
 }
 
-func (f Flag) IsFloat64() bool {
-	return f&Float64 > 0
+func (i Flag) IsFloat64() bool {
+	return i&Float64 > 0
 }
 
-func (f Flag) IsBool() bool {
-	return f&Bool > 0
+func (i Flag) IsBool() bool {
+	return i&Bool > 0
 }
 
-func (f Flag) IsDuration() bool {
-	return f&Duration > 0
+func (i Flag) IsDuration() bool {
+	return i&Duration > 0
 }
 
-func (f Flag) IsTime() bool {
-	return f&Time > 0
+func (i Flag) IsTime() bool {
+	return i&Time > 0
 }
 
-func (f Flag) IsAny() bool {
-	return f&Any > 0
+func (i Flag) IsAny() bool {
+	return i&Any > 0
 }
 
-func (f Flag) Type() Flag {
+func (i Flag) Type() Flag {
 	switch {
-	case f.IsInt():
+	case i.IsInt():
 		return Int
-	case f.IsInt64():
+	case i.IsInt64():
 		return Int64
-	case f.IsUint():
+	case i.IsUint():
 		return Uint
-	case f.IsUint64():
+	case i.IsUint64():
 		return Uint64
-	case f.IsFloat64():
+	case i.IsFloat64():
 		return Float64
-	case f.IsBool():
+	case i.IsBool():
 		return Bool
-	case f.IsDuration():
+	case i.IsDuration():
 		return Duration
-	case f.IsTime():
+	case i.IsTime():
 		return Time
-	case f.IsAny():
+	case i.IsAny():
 		return Any
 	default:
 		return String

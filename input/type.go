@@ -9,10 +9,10 @@ const (
 	Option               // option
 )
 
-func (t Type) IsArgument() bool {
-	return t == Argument
+func (i Type) IsArgument() bool {
+	return i == Argument
 }
 
-func (t Type) IsOption() bool {
-	return t == Option
+func (i Type) IsOption() bool {
+	return i == Option
 }
