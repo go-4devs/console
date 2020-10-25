@@ -13,10 +13,10 @@ import (
 
 func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
-	in := &input.Array{}
-	in.SetArgument("username", "andrey")
 	buf := bytes.Buffer{}
 	out := output.Buffer(&buf)
+	in := &input.Array{}
+	in.SetArgument("username", "andrey")
 
 	err := console.Run(ctx, command.CreateUser(false), in, out)
 	if err != nil {

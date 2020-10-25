@@ -130,6 +130,7 @@ func (a *App) list(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	in := &input.Wrap{
 		Input: a.in,
 	}

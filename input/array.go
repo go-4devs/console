@@ -58,14 +58,14 @@ func (a *Array) Argument(_ context.Context, name string) value.Value {
 }
 
 func (a *Array) Bind(ctx context.Context, d *Definition) error {
-	if err := a.bindArguments(ctx, d); err != nil {
+	if err := a.bindArguments(d); err != nil {
 		return err
 	}
 
-	return a.bindOption(ctx, d)
+	return a.bindOption(d)
 }
 
-func (a *Array) bindOption(ctx context.Context, def *Definition) error {
+func (a *Array) bindOption(def *Definition) error {
 	for _, name := range def.Options() {
 		opt, err := def.Option(name)
 		if err != nil {
@@ -77,6 +77,7 @@ func (a *Array) bindOption(ctx context.Context, def *Definition) error {
 			switch {
 			case opt.HasDefault():
 				a.defaults.SetOption(name, opt.Default)
+
 				continue
 			case opt.IsRequired():
 				return errs.Option(name, errs.ErrRequired)
@@ -85,17 +86,17 @@ func (a *Array) bindOption(ctx context.Context, def *Definition) error {
 			}
 		}
 
+		a.SetOption(name, v)
+
 		if err := opt.Validate(v); err != nil {
 			return errs.Option(name, err)
 		}
-
-		a.SetOption(name, v)
 	}
 
 	return nil
 }
 
-func (a *Array) bindArguments(ctx context.Context, def *Definition) error {
+func (a *Array) bindArguments(def *Definition) error {
 	for pos, name := range def.Arguments() {
 		arg, err := def.Argument(pos)
 		if err != nil {
@@ -107,6 +108,7 @@ func (a *Array) bindArguments(ctx context.Context, def *Definition) error {
 			switch {
 			case arg.HasDefault():
 				a.defaults.SetArgument(name, arg.Default)
+
 				continue
 			case arg.IsRequired():
 				return errs.Argument(name, errs.ErrRequired)

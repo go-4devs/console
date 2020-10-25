@@ -4,7 +4,10 @@ import (
 	"time"
 )
 
-var Empty = &empty{}
+// nolint: gochecknoglobals
+var (
+	Empty = &empty{}
+)
 
 func IsEmpty(v Value) bool {
 	return v == Empty
