@@ -3,7 +3,7 @@ package value
 import (
 	"strconv"
 
-	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 type Uint struct {

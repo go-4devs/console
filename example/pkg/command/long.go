@@ -6,9 +6,9 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/validator"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 	"gitoa.ru/go-4devs/console/output"
 )
 

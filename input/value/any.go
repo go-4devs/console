@@ -1,6 +1,6 @@
 package value
 
-import "gitoa.ru/go-4devs/console/input/flag"
+import "gitoa.ru/go-4devs/console/input/value/flag"
 
 type Any struct {
 	empty

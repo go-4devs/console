@@ -3,7 +3,7 @@ package value
 import (
 	"time"
 
-	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 type Duration struct {
