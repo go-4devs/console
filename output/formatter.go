@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"gitoa.ru/go-4devs/console/output/formatter"
+	"gitoa.ru/go-4devs/console/output/label"
 	"gitoa.ru/go-4devs/console/output/verbosity"
 )
 
 func Format(out Output, format *formatter.Formatter) Output {
-	return func(ctx context.Context, v verbosity.Verbosity, msg string, kv ...KeyValue) (int, error) {
+	return func(ctx context.Context, v verbosity.Verbosity, msg string, kv ...label.KeyValue) (int, error) {
 		return out(ctx, v, format.Format(ctx, msg), kv...)
 	}
 }

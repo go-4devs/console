@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"gitoa.ru/go-4devs/console/output/label"
 	"gitoa.ru/go-4devs/console/output/verbosity"
 )
 
@@ -15,13 +16,13 @@ func writeError(_ int, err error) {
 	}
 }
 
-type Output func(ctx context.Context, verb verbosity.Verbosity, msg string, args ...KeyValue) (int, error)
+type Output func(ctx context.Context, verb verbosity.Verbosity, msg string, args ...label.KeyValue) (int, error)
 
 func (o Output) Print(ctx context.Context, args ...interface{}) {
 	writeError(o(ctx, verbosity.Norm, fmt.Sprint(args...)))
 }
 
-func (o Output) PrintKV(ctx context.Context, msg string, kv ...KeyValue) {
+func (o Output) PrintKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Norm, msg, kv...))
 }
 
@@ -37,7 +38,7 @@ func (o Output) Info(ctx context.Context, args ...interface{}) {
 	writeError(o(ctx, verbosity.Info, fmt.Sprint(args...)))
 }
 
-func (o Output) InfoKV(ctx context.Context, msg string, kv ...KeyValue) {
+func (o Output) InfoKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Info, msg, kv...))
 }
 
@@ -45,7 +46,7 @@ func (o Output) Debug(ctx context.Context, args ...interface{}) {
 	writeError(o(ctx, verbosity.Debug, fmt.Sprint(args...)))
 }
 
-func (o Output) DebugKV(ctx context.Context, msg string, kv ...KeyValue) {
+func (o Output) DebugKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Debug, msg, kv...))
 }
 
@@ -53,7 +54,7 @@ func (o Output) Trace(ctx context.Context, args ...interface{}) {
 	writeError(o(ctx, verbosity.Trace, fmt.Sprint(args...)))
 }
 
-func (o Output) TraceKV(ctx context.Context, msg string, kv ...KeyValue) {
+func (o Output) TraceKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Trace, msg, kv...))
 }
 

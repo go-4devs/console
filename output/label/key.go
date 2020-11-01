@@ -1,4 +1,4 @@
-package output
+package label
 
 type Key string
 

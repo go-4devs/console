@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"gitoa.ru/go-4devs/console/output/label"
 	"gitoa.ru/go-4devs/console/output/verbosity"
 )
 
@@ -25,21 +26,21 @@ func Buffer(buf *bytes.Buffer) Output {
 	return New(buf, FormatString)
 }
 
-func FormatString(_ verbosity.Verbosity, msg string, kv ...KeyValue) string {
+func FormatString(_ verbosity.Verbosity, msg string, kv ...label.KeyValue) string {
 	if len(kv) > 0 {
 		nline := ""
 		if msg[len(msg)-1:] == newline {
 			nline = newline
 		}
 
-		return "msg=\"" + strings.TrimSpace(msg) + "\", " + KeyValues(kv).String() + nline
+		return "msg=\"" + strings.TrimSpace(msg) + "\", " + label.KeyValues(kv).String() + nline
 	}
 
 	return msg
 }
 
-func New(w io.Writer, format func(verb verbosity.Verbosity, msg string, kv ...KeyValue) string) Output {
-	return func(ctx context.Context, verb verbosity.Verbosity, msg string, kv ...KeyValue) (int, error) {
+func New(w io.Writer, format func(verb verbosity.Verbosity, msg string, kv ...label.KeyValue) string) Output {
+	return func(ctx context.Context, verb verbosity.Verbosity, msg string, kv ...label.KeyValue) (int, error) {
 		return fmt.Fprint(w, format(verb, msg, kv...))
 	}
 }

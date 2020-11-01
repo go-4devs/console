@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"gitoa.ru/go-4devs/console/output"
+	"gitoa.ru/go-4devs/console/output/label"
 )
 
 func TestNew(t *testing.T) {
@@ -15,23 +16,23 @@ func TestNew(t *testing.T) {
 
 	cases := map[string]struct {
 		ex string
-		kv []output.KeyValue
+		kv []label.KeyValue
 	}{
 		"message": {
 			ex: "message",
 		},
 		"msg with kv": {
 			ex: "msg=\"msg with kv\", string key=\"string value\", bool key=\"false\", int key=\"42\"",
-			kv: []output.KeyValue{
-				output.String("string key", "string value"),
-				output.Bool("bool key", false),
-				output.Int("int key", 42),
+			kv: []label.KeyValue{
+				label.String("string key", "string value"),
+				label.Bool("bool key", false),
+				label.Int("int key", 42),
 			},
 		},
 		"msg with newline \n": {
 			ex: "msg=\"msg with newline\", int=\"42\"\n",
-			kv: []output.KeyValue{
-				output.Int("int", 42),
+			kv: []label.KeyValue{
+				label.Int("int", 42),
 			},
 		},
 	}
