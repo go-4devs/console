@@ -10,7 +10,7 @@ var (
 )
 
 func IsEmpty(v Value) bool {
-	return v == Empty
+	return v == nil || v == Empty
 }
 
 type empty struct{}

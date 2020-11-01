@@ -3,6 +3,7 @@ package console
 import (
 	"context"
 	"errors"
+	"log"
 	"os"
 
 	"gitoa.ru/go-4devs/console/input"
@@ -104,12 +105,9 @@ func verbose(ctx context.Context, in input.Input, out output.Output) output.Outp
 }
 
 func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
-	w := &input.Wrap{
-		Input: in,
-	}
-
-	w.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
-	w.SetOption("help", value.New(false))
+	a := &input.Array{}
+	a.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
+	a.SetOption("help", value.New(false))
 
 	if _, err := Find(cmd.Name); errors.Is(err, ErrNotFound) {
 		register(cmd)
@@ -119,6 +117,8 @@ func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Outp
 	if err != nil {
 		return err
 	}
+	log.Println(a)
+	w := input.Chain(a, in)
 
 	return Run(ctx, help, w, out)
 }

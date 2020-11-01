@@ -131,10 +131,9 @@ func (a *App) list(ctx context.Context) error {
 		return err
 	}
 
-	in := &input.Wrap{
-		Input: a.in,
-	}
-	in.SetArgument("command_name", value.New(CommandList))
+	arr := &input.Array{}
+	arr.SetArgument("command_name", value.New(CommandList))
+	in := input.Chain(a.in, arr)
 
 	return Run(ctx, cmd, in, a.out)
 }
