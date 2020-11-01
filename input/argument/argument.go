@@ -1,6 +1,7 @@
 package argument
 
 import (
+	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/input/value/flag"
 )
@@ -45,13 +46,9 @@ func (a Argument) IsArray() bool {
 func (a Argument) Validate(v value.Value) error {
 	for _, valid := range a.Valid {
 		if err := valid(v); err != nil {
-			return Error(a.Name, err)
+			return errs.Argument(a.Name, err)
 		}
 	}
 
 	return nil
-}
-
-func Error(name string, err error) error {
-	return err
 }

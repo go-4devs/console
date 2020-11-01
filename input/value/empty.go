@@ -6,11 +6,15 @@ import (
 
 // nolint: gochecknoglobals
 var (
-	Empty = &empty{}
+	emptyValue = &empty{}
 )
 
+func Empty() Value {
+	return emptyValue
+}
+
 func IsEmpty(v Value) bool {
-	return v == nil || v == Empty
+	return v == nil || v == emptyValue
 }
 
 type empty struct{}

@@ -3,7 +3,6 @@ package console
 import (
 	"context"
 	"errors"
-	"log"
 	"os"
 
 	"gitoa.ru/go-4devs/console/input"
@@ -117,7 +116,7 @@ func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Outp
 	if err != nil {
 		return err
 	}
-	log.Println(a)
+
 	w := input.Chain(a, in)
 
 	return Run(ctx, help, w, out)

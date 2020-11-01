@@ -2,78 +2,56 @@ package input
 
 import (
 	"context"
-	"sync"
 
 	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/value"
 )
 
 type Array struct {
-	defaults array
-	value    array
+	Map
+	defaults Map
 }
 
-func (a *Array) GetOption(name string) (value.Append, bool) {
-	return a.value.GetOption(name)
-}
-
-func (a *Array) SetOption(name string, v interface{}) {
-	a.value.SetOption(name, v)
-}
-
-func (a *Array) LenArguments() int {
-	return a.value.LenArguments()
-}
-
-func (a *Array) GetArgument(name string) (value.Append, bool) {
-	return a.value.GetArgument(name)
-}
-
-func (a *Array) SetArgument(name string, v interface{}) {
-	a.value.SetArgument(name, v)
-}
-
-func (a *Array) Option(_ context.Context, name string) value.Value {
-	if v, ok := a.value.GetOption(name); ok {
+func (a *Array) Option(ctx context.Context, name string) value.Value {
+	if v := a.Map.Option(ctx, name); !value.IsEmpty(v) {
 		return v
 	}
 
-	if v, ok := a.defaults.GetOption(name); ok {
+	if v := a.defaults.Option(ctx, name); !value.IsEmpty(v) {
 		return v
 	}
 
-	return value.Empty
+	return value.Empty()
 }
 
-func (a *Array) Argument(_ context.Context, name string) value.Value {
-	if v, ok := a.value.GetArgument(name); ok {
+func (a *Array) Argument(ctx context.Context, name string) value.Value {
+	if v := a.Map.Argument(ctx, name); !value.IsEmpty(v) {
 		return v
 	}
 
-	if v, ok := a.defaults.GetArgument(name); ok {
+	if v := a.defaults.Argument(ctx, name); !value.IsEmpty(v) {
 		return v
 	}
 
-	return value.Empty
+	return value.Empty()
 }
 
 func (a *Array) Bind(ctx context.Context, d *Definition) error {
-	if err := a.bindArguments(d); err != nil {
+	if err := a.bindArguments(ctx, d); err != nil {
 		return err
 	}
 
-	return a.bindOption(d)
+	return a.bindOption(ctx, d)
 }
 
-func (a *Array) bindOption(def *Definition) error {
+func (a *Array) bindOption(ctx context.Context, def *Definition) error {
 	for _, name := range def.Options() {
 		opt, err := def.Option(name)
 		if err != nil {
 			return err
 		}
 
-		v, ok := a.value.GetOption(name)
-		if !ok {
+		if !a.HasOption(name) {
 			switch {
 			case opt.HasDefault():
 				a.defaults.SetOption(name, opt.Default)
@@ -86,7 +64,10 @@ func (a *Array) bindOption(def *Definition) error {
 			}
 		}
 
-		a.SetOption(name, v)
+		v := a.Map.Option(ctx, name)
+		if value.IsEmpty(v) {
+			continue
+		}
 
 		if err := opt.Validate(v); err != nil {
 			return errs.Option(name, err)
@@ -96,15 +77,14 @@ func (a *Array) bindOption(def *Definition) error {
 	return nil
 }
 
-func (a *Array) bindArguments(def *Definition) error {
+func (a *Array) bindArguments(ctx context.Context, def *Definition) error {
 	for pos, name := range def.Arguments() {
 		arg, err := def.Argument(pos)
 		if err != nil {
 			return err
 		}
 
-		v, ok := a.value.GetArgument(name)
-		if !ok {
+		if !a.HasArgument(name) {
 			switch {
 			case arg.HasDefault():
 				a.defaults.SetArgument(name, arg.Default)
@@ -117,54 +97,12 @@ func (a *Array) bindArguments(def *Definition) error {
 			}
 		}
 
-		if err := arg.Validate(v); err != nil {
-			return errs.Argument(name, err)
+		if v := a.Map.Argument(ctx, name); !value.IsEmpty(v) {
+			if err := arg.Validate(v); err != nil {
+				return errs.Argument(name, err)
+			}
 		}
-
-		a.SetArgument(name, v)
 	}
 
 	return nil
-}
-
-type array struct {
-	opts map[string]value.Append
-	args map[string]value.Append
-	mu   sync.Mutex
-}
-
-func (a *array) GetOption(name string) (value.Append, bool) {
-	v, ok := a.opts[name]
-
-	return v, ok
-}
-
-func (a *array) SetOption(name string, v interface{}) {
-	if a.opts == nil {
-		a.opts = make(map[string]value.Append)
-	}
-
-	a.mu.Lock()
-	a.opts[name] = value.New(v)
-	a.mu.Unlock()
-}
-
-func (a *array) LenArguments() int {
-	return len(a.args)
-}
-
-func (a *array) GetArgument(name string) (value.Append, bool) {
-	v, ok := a.args[name]
-
-	return v, ok
-}
-
-func (a *array) SetArgument(name string, v interface{}) {
-	if a.args == nil {
-		a.args = make(map[string]value.Append)
-	}
-
-	a.mu.Lock()
-	a.args[name] = value.New(v)
-	a.mu.Unlock()
 }

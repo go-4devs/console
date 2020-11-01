@@ -7,7 +7,6 @@ import (
 
 	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/option"
-	"gitoa.ru/go-4devs/console/input/value"
 )
 
 const doubleDash = `--`
@@ -72,9 +71,7 @@ func (i *Argv) parseLongOption(arg string, def *Definition) error {
 }
 
 func (i *Argv) appendOption(name string, data *string, opt option.Option) error {
-	v, ok := i.GetOption(name)
-
-	if ok && !opt.IsArray() {
+	if i.HasOption(name) && !opt.IsArray() {
 		return fmt.Errorf("%w: got: array, expect: %s", errs.ErrUnexpectedType, opt.Flag.Type())
 	}
 
@@ -92,12 +89,7 @@ func (i *Argv) appendOption(name string, data *string, opt option.Option) error 
 		return errs.Option(name, errs.ErrRequired)
 	}
 
-	if !ok {
-		v = value.ByFlag(opt.Flag)
-		i.SetOption(name, v)
-	}
-
-	if err := v.Append(val); err != nil {
+	if err := i.AppendOption(opt.Flag, name, val); err != nil {
 		return errs.Option(name, err)
 	}
 
@@ -139,13 +131,7 @@ func (i *Argv) parseArgument(arg string, def *Definition) error {
 		return err
 	}
 
-	v, ok := i.GetArgument(opt.Name)
-	if !ok {
-		v = value.ByFlag(opt.Flag)
-		i.SetArgument(opt.Name, v)
-	}
-
-	if err := v.Append(arg); err != nil {
+	if err := i.AppendArgument(opt.Flag, opt.Name, arg); err != nil {
 		return errs.Argument(opt.Name, err)
 	}
 

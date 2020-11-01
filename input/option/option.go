@@ -1,6 +1,7 @@
 package option
 
 import (
+	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/input/value/flag"
 )
@@ -88,13 +89,9 @@ func (o Option) IsRequired() bool {
 func (o Option) Validate(v value.Value) error {
 	for _, valid := range o.Valid {
 		if err := valid(v); err != nil {
-			return Error(o.Name, err)
+			return errs.Option(o.Name, err)
 		}
 	}
 
 	return nil
-}
-
-func Error(name string, err error) error {
-	return err
 }
