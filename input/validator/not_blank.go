@@ -1,8 +1,8 @@
 package validator
 
 import (
-	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 //nolint: gocyclo

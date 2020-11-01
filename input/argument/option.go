@@ -1,8 +1,8 @@
 package argument
 
 import (
-	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 func Required(a *Argument) {

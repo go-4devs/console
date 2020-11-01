@@ -1,7 +1,7 @@
 package option
 
 import (
-	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 func Bool(name, description string, opts ...func(*Option)) Option {

@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 func TestNotBlank(t *testing.T) {
