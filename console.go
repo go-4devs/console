@@ -15,7 +15,7 @@ import (
 const (
 	verboseTrace = 3
 	verboseDebug = 2
-	verboseInfo  = 3
+	verboseInfo  = 1
 )
 
 // Execute the current command with option.

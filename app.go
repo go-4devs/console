@@ -133,11 +133,11 @@ func (a *App) list(ctx context.Context) error {
 
 	arr := &input.Array{}
 	arr.SetArgument("command_name", value.New(CommandList))
-	in := input.Chain(a.in, arr)
+	in := input.Chain(arr, a.in)
 
 	return Run(ctx, cmd, in, a.out)
 }
 
 func (a *App) printError(ctx context.Context, err error) {
-	a.out.Println(ctx, "<error>\n\n  ", err, "\n</error>")
+	ansi(ctx, a.in, a.out).Println(ctx, "<error>\n\n  ", err, "\n</error>")
 }
