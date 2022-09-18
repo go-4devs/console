@@ -18,6 +18,24 @@ steps:
   commands:
   - go test ./...
 
+- name: example golangci-lint
+  image: golangci/golangci-lint:v1.49
+  volumes:
+    - name: deps
+      path: /go/src/mod
+  commands:
+  - cd example
+  - golangci-lint run --timeout 5m
+
+- name: example test
+  image: golang
+  volumes:
+  - name: deps
+    path: /go/src/mod
+  commands:
+  - cd example
+  - go test ./...
+
 volumes:
 - name: deps
   temp: {}
