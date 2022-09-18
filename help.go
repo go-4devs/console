@@ -22,8 +22,8 @@ func init() {
 }
 
 const (
-	HelpArgumentCommandName = "command_name"
-	helpOptFormat           = "format"
+	ArgumentCommandName = "command_name"
+	OptionFormat        = "format"
 )
 
 func help() *Command {
@@ -39,8 +39,8 @@ To display the list of available commands, please use the <info>list</info> comm
 `,
 		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
 			var err error
-			name := in.Argument(ctx, HelpArgumentCommandName).String()
-			format := in.Option(ctx, helpOptFormat).String()
+			name := in.Argument(ctx, ArgumentCommandName).String()
+			format := in.Option(ctx, OptionFormat).String()
 
 			des, err := descriptor.Find(format)
 			if err != nil {
@@ -81,10 +81,10 @@ To display the list of available commands, please use the <info>list</info> comm
 			formats := descriptor.Descriptors()
 			config.
 				SetArguments(
-					argument.String(HelpArgumentCommandName, "The command name", argument.Default(value.New("help"))),
+					argument.String(ArgumentCommandName, "The command name", argument.Default(value.New("help"))),
 				).
 				SetOptions(
-					option.String(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
+					option.String(OptionFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
 						option.Default(formats[0]),
 						option.Valid(

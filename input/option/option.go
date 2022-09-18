@@ -15,6 +15,10 @@ func Default(in interface{}) variable.Option {
 	return variable.Default(value.New(in))
 }
 
+func Hidden(in *variable.Variable) {
+	variable.Hidden(in)
+}
+
 func Required(v *variable.Variable) {
 	variable.Required(v)
 }

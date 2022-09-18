@@ -18,6 +18,15 @@ const (
 	verboseInfo  = 1
 )
 
+const (
+	OptionHelp    = "help"
+	OptionVersion = "version"
+	OptionAnsi    = "ansi"
+	OptionNoAnsi  = "no-ansi"
+	OptionQuiet   = "quiet"
+	OptionVerbose = "verbose"
+)
+
 // Execute the current command with option.
 func Execute(ctx context.Context, cmd *Command, opts ...func(*App)) {
 	opts = append([]func(*App){WithSkipArgs(1)}, opts...)
@@ -42,7 +51,7 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 
 	out = verbose(ctx, in, out)
 
-	if in.Option(ctx, "version").Bool() {
+	if in.Option(ctx, OptionVersion).Bool() {
 		version := cmd.Version
 		if version == "" {
 			version = "unknown"
@@ -53,7 +62,7 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 		return nil
 	}
 
-	if in.Option(ctx, "help").Bool() {
+	if in.Option(ctx, OptionHelp).Bool() {
 		return showHelp(ctx, cmd, in, out)
 	}
 
@@ -62,9 +71,9 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 
 func ansi(ctx context.Context, in input.Input, out output.Output) output.Output {
 	switch {
-	case in.Option(ctx, "ansi").Bool():
+	case in.Option(ctx, OptionAnsi).Bool():
 		out = output.Ansi(out)
-	case in.Option(ctx, "no-ansi").Bool():
+	case in.Option(ctx, OptionNoAnsi).Bool():
 		out = output.None(out)
 	case lookupEnv("NO_COLOR"):
 		out = output.None(out)
@@ -83,10 +92,10 @@ func lookupEnv(name string) bool {
 
 func verbose(ctx context.Context, in input.Input, out output.Output) output.Output {
 	switch {
-	case in.Option(ctx, "quiet").Bool():
+	case in.Option(ctx, OptionQuiet).Bool():
 		out = output.Quiet()
 	default:
-		verb := in.Option(ctx, "verbose").Bools()
+		verb := in.Option(ctx, OptionVerbose).Bools()
 
 		switch {
 		case len(verb) == verboseInfo:
@@ -105,8 +114,8 @@ func verbose(ctx context.Context, in input.Input, out output.Output) output.Outp
 
 func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
 	arr := &input.Array{}
-	arr.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
-	arr.SetOption("help", value.New(false))
+	arr.SetArgument(ArgumentCommandName, value.New(cmd.Name))
+	arr.SetOption(OptionHelp, value.New(false))
 
 	if _, err := Find(cmd.Name); errors.Is(err, ErrNotFound) {
 		register(cmd)
@@ -125,13 +134,13 @@ func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Outp
 // Default options and argument command.
 func Default(d *input.Definition) *input.Definition {
 	return d.SetOptions(
-		option.Bool("no-ansi", "Disable ANSI output"),
-		option.Bool("ansi", "Do not ask any interactive question"),
-		option.Bool("version", "Display this application version", option.Short('V')),
-		option.Bool("help", "Display this help message", option.Short('h')),
-		option.Bool("verbose",
+		option.Bool(OptionNoAnsi, "Disable ANSI output"),
+		option.Bool(OptionAnsi, "Do not ask any interactive question"),
+		option.Bool(OptionVersion, "Display this application version", option.Short('V')),
+		option.Bool(OptionHelp, "Display this help message", option.Short('h')),
+		option.Bool(OptionVerbose,
 			"Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace",
 			option.Short('v'), option.Array),
-		option.Bool("quiet", "Do not output any message", option.Short('q')),
+		option.Bool(OptionQuiet, "Do not output any message", option.Short('q')),
 	)
 }

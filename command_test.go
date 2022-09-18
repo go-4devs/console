@@ -43,6 +43,7 @@ func Command() *console.Command {
 					option.String("string", "array string", option.Array),
 					option.Bool("bool", "test bool option"),
 					option.Duration("duration", "test duration with default", option.Default(time.Second)),
+					option.Time("hidden", "hidden time", option.Default(time.Second), option.Hidden),
 				)
 
 			return nil
