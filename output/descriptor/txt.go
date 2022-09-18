@@ -209,6 +209,9 @@ func txtDefinitionOption(maxLen int, def *input.Definition) string {
 
 	for _, name := range opts {
 		opt, _ := def.Option(name)
+		if opt.IsHidden() {
+			continue
+		}
 
 		var op bytes.Buffer
 

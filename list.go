@@ -20,6 +20,10 @@ func init() {
 	MustRegister(list())
 }
 
+const (
+	ArgumentNamespace = "namespace"
+)
+
 func list() *Command {
 	return &Command{
 		Name:        CommandList,
@@ -37,10 +41,10 @@ You can also output the information in other formats by using the <comment>--for
 			formats := descriptor.Descriptors()
 			config.
 				SetArguments(
-					argument.String("namespace", "The namespace name"),
+					argument.String(ArgumentNamespace, "The namespace name"),
 				).
 				SetOptions(
-					option.String(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
+					option.String(OptionFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
 						option.Default(formats[0]),
 						option.Valid(
@@ -57,8 +61,8 @@ You can also output the information in other formats by using the <comment>--for
 
 //nolint:cyclop
 func executeList(ctx context.Context, in input.Input, out output.Output) error {
-	ns := in.Argument(ctx, "namespace").String()
-	format := in.Option(ctx, helpOptFormat).String()
+	ns := in.Argument(ctx, ArgumentNamespace).String()
+	format := in.Option(ctx, OptionFormat).String()
 
 	des, err := descriptor.Find(format)
 	if err != nil {

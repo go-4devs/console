@@ -40,6 +40,10 @@ func Required(v *Variable) {
 	v.Flag |= flag.Required
 }
 
+func Hidden(v *Variable) {
+	v.hidden = true
+}
+
 func WithParse(create Create, update Append) Option {
 	return func(v *Variable) {
 		v.append = func(Param) Append { return update }
@@ -99,6 +103,7 @@ type Variable struct {
 	Flag        flag.Flag
 	Type        ArgType
 	Default     value.Value
+	hidden      bool
 	Valid       []func(value.Value) error
 	params      Params
 	create      func(Param) Create
@@ -113,6 +118,10 @@ func (v Variable) Validate(in value.Value) error {
 	}
 
 	return nil
+}
+
+func (v Variable) IsHidden() bool {
+	return v.hidden
 }
 
 func (v Variable) IsArray() bool {
