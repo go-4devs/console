@@ -16,7 +16,8 @@ const (
 	AppName   = "console"
 )
 
-// FDEVS_CONSOLE_CAT=env go run cmd/config/main.go fdevs:console:arg -b tmp.
+// FDEVS_CONSOLE_CAT=env FDEVS_CONSOLE_HIDDEN=2022-09-18T23:07:49+03:00 go run cmd/config/main.go fdevs:console:arg -b tmp.
+// FDEVS_CONSOLE_CAT=env go run cmd/config/main.go fdevs:console:arg --hidden=2022-09-18T23:07:49+03:00 -b tmp.
 func main() {
 	env := config.New(Namespace, AppName, []config.Provider{
 		env.New(),
