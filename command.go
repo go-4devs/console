@@ -17,38 +17,38 @@ type (
 )
 
 // WithPrepare append middleware for configuration command.
-func WithPrepare(p ...Prepare) Option {
+func WithPrepare(prepares ...Prepare) Option {
 	return func(c *Command) {
 		if c.Prepare != nil {
-			p = append([]Prepare{c.Prepare}, p...)
+			prepares = append([]Prepare{c.Prepare}, prepares...)
 		}
 
-		c.Prepare = ChainPrepare(p...)
+		c.Prepare = ChainPrepare(prepares...)
 	}
 }
 
 // WithHandle append middleware for executed command.
-func WithHandle(h ...Handle) Option {
+func WithHandle(handles ...Handle) Option {
 	return func(c *Command) {
 		if c.Handle != nil {
-			h = append([]Handle{c.Handle}, h...)
+			handles = append([]Handle{c.Handle}, handles...)
 		}
 
-		c.Handle = ChainHandle(h...)
+		c.Handle = ChainHandle(handles...)
 	}
 }
 
 // WithHidden sets hidden command.
-func WithHidden(v bool) Option {
+func WithHidden(hidden bool) Option {
 	return func(c *Command) {
-		c.Hidden = v
+		c.Hidden = hidden
 	}
 }
 
 // WithName sets name command.
-func WithName(n string) Option {
+func WithName(name string) Option {
 	return func(c *Command) {
-		c.Name = n
+		c.Name = name
 	}
 }
 
@@ -125,13 +125,13 @@ func (c *Command) Init(ctx context.Context, cfg *input.Definition) error {
 
 // ChainPrepare creates middleware for configures command.
 func ChainPrepare(prepare ...Prepare) Prepare {
-	n := len(prepare)
-	if n == 1 {
+	num := len(prepare)
+	if num == 1 {
 		return prepare[0]
 	}
 
-	if n > 1 {
-		lastI := n - 1
+	if num > 1 {
+		lastI := num - 1
 
 		return func(ctx context.Context, def *input.Definition, next Configure) error {
 			var (
@@ -161,13 +161,13 @@ func ChainPrepare(prepare ...Prepare) Prepare {
 
 // ChainHandle creates middleware for executes command.
 func ChainHandle(handlers ...Handle) Handle {
-	n := len(handlers)
-	if n == 1 {
+	num := len(handlers)
+	if num == 1 {
 		return handlers[0]
 	}
 
-	if n > 1 {
-		lastI := n - 1
+	if num > 1 {
+		lastI := num - 1
 
 		return func(ctx context.Context, in input.Input, out output.Output, next Action) error {
 			var (

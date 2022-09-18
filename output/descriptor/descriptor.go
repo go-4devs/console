@@ -11,7 +11,7 @@ import (
 
 var ErrDescriptorNotFound = errors.New("descriptor not found")
 
-//nolint: gochecknoglobals
+//nolint:gochecknoglobals
 var (
 	descriptors = map[string]Descriptor{
 		"txt": &txt{},

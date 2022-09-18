@@ -1,97 +1,68 @@
 package option
 
 import (
-	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/input/value/flag"
+	"gitoa.ru/go-4devs/console/input/variable"
 )
 
-func Required(o *Option) {
-	o.Flag |= flag.Required
-}
-
-func Default(in interface{}) func(*Option) {
-	return func(o *Option) {
-		o.Default = value.New(in)
+func Short(in rune) variable.Option {
+	return func(v *variable.Variable) {
+		v.Alias = string(in)
 	}
 }
 
-func Short(s string) func(*Option) {
-	return func(o *Option) {
-		o.Short = s
-	}
+func Default(in interface{}) variable.Option {
+	return variable.Default(value.New(in))
 }
 
-func Array(o *Option) {
-	o.Flag |= flag.Array
+func Required(v *variable.Variable) {
+	variable.Required(v)
 }
 
-func Value(flag flag.Flag) func(*Option) {
-	return func(o *Option) {
-		o.Flag |= flag
-	}
+func Valid(f ...func(value.Value) error) variable.Option {
+	return variable.Valid(f...)
 }
 
-func Flag(in flag.Flag) func(*Option) {
-	return func(o *Option) {
-		o.Flag = in
-	}
+func Array(v *variable.Variable) {
+	variable.Array(v)
 }
 
-func Valid(f ...func(value.Value) error) func(*Option) {
-	return func(o *Option) {
-		o.Valid = f
-	}
+func String(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.String(name, description, append(opts, variable.ArgOption)...)
 }
 
-func New(name, description string, opts ...func(*Option)) Option {
-	o := Option{
-		Name:        name,
-		Description: description,
-	}
-
-	for _, opt := range opts {
-		opt(&o)
-	}
-
-	return o
+func Bool(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Bool(name, description, append(opts, variable.ArgOption)...)
 }
 
-type Option struct {
-	Name        string
-	Description string
-	Short       string
-	Flag        flag.Flag
-	Default     value.Value
-	Valid       []func(value.Value) error
+func Duration(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Duration(name, description, append(opts, variable.ArgOption)...)
 }
 
-func (o Option) HasShort() bool {
-	return len(o.Short) == 1
+func Float64(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Float64(name, description, append(opts, variable.ArgOption)...)
 }
 
-func (o Option) HasDefault() bool {
-	return o.Default != nil
+func Int(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Int(name, description, append(opts, variable.ArgOption)...)
 }
 
-func (o Option) IsBool() bool {
-	return o.Flag.IsBool()
+func Int64(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Int64(name, description, append(opts, variable.ArgOption)...)
 }
 
-func (o Option) IsArray() bool {
-	return o.Flag.IsArray()
+func Time(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Time(name, description, append(opts, variable.ArgOption)...)
 }
 
-func (o Option) IsRequired() bool {
-	return o.Flag.IsRequired()
+func Uint(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Uint(name, description, append(opts, variable.ArgOption)...)
 }
 
-func (o Option) Validate(v value.Value) error {
-	for _, valid := range o.Valid {
-		if err := valid(v); err != nil {
-			return errs.Option(o.Name, err)
-		}
-	}
+func Uint64(name, descriontion string, opts ...variable.Option) variable.Variable {
+	return variable.Uint64(name, descriontion, append(opts, variable.ArgOption)...)
+}
 
-	return nil
+func Err(name string, err error) variable.Error {
+	return variable.Err(name, variable.TypeOption, err)
 }

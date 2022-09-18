@@ -8,7 +8,6 @@ import (
 	"gitoa.ru/go-4devs/console/output/style"
 )
 
-//nolint: gochecknoglobals
 var re = regexp.MustCompile(`<(([a-z][^<>]+)|/([a-z][^<>]+)?)>`)
 
 func WithStyle(styles func(string) (style.Style, error)) func(*Formatter) {
@@ -18,15 +17,15 @@ func WithStyle(styles func(string) (style.Style, error)) func(*Formatter) {
 }
 
 func New(opts ...func(*Formatter)) *Formatter {
-	f := &Formatter{
+	formatter := &Formatter{
 		styles: style.Find,
 	}
 
 	for _, opt := range opts {
-		opt(f)
+		opt(formatter)
 	}
 
-	return f
+	return formatter
 }
 
 type Formatter struct {

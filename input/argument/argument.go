@@ -1,54 +1,58 @@
 package argument
 
 import (
-	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/input/value/flag"
+	"gitoa.ru/go-4devs/console/input/variable"
 )
 
-func New(name, description string, opts ...func(*Argument)) Argument {
-	a := Argument{
-		Name:        name,
-		Description: description,
-	}
-
-	for _, opt := range opts {
-		opt(&a)
-	}
-
-	return a
+func Default(in interface{}) variable.Option {
+	return variable.Default(value.New(in))
 }
 
-type Argument struct {
-	Name        string
-	Description string
-	Default     value.Value
-	Flag        flag.Flag
-	Valid       []func(value.Value) error
+func Required(v *variable.Variable) {
+	variable.Required(v)
 }
 
-func (a Argument) HasDefault() bool {
-	return a.Default != nil
+func Array(v *variable.Variable) {
+	variable.Array(v)
 }
 
-func (a Argument) IsBool() bool {
-	return a.Flag.IsBool()
+func String(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.String(name, description, append(opts, variable.ArgArgument)...)
 }
 
-func (a Argument) IsRequired() bool {
-	return a.Flag.IsRequired()
+func Bool(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Bool(name, description, append(opts, variable.ArgArgument)...)
 }
 
-func (a Argument) IsArray() bool {
-	return a.Flag.IsArray()
+func Duration(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Duration(name, description, append(opts, variable.ArgArgument)...)
 }
 
-func (a Argument) Validate(v value.Value) error {
-	for _, valid := range a.Valid {
-		if err := valid(v); err != nil {
-			return errs.Argument(a.Name, err)
-		}
-	}
+func Float64(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Float64(name, description, append(opts, variable.ArgArgument)...)
+}
 
-	return nil
+func Int(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Int(name, description, append(opts, variable.ArgArgument)...)
+}
+
+func Int64(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Int64(name, description, append(opts, variable.ArgArgument)...)
+}
+
+func Time(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Time(name, description, append(opts, variable.ArgArgument)...)
+}
+
+func Uint(name, description string, opts ...variable.Option) variable.Variable {
+	return variable.Uint(name, description, append(opts, variable.ArgArgument)...)
+}
+
+func Uint64(name, descriontion string, opts ...variable.Option) variable.Variable {
+	return variable.Uint64(name, descriontion, append(opts, variable.ArgArgument)...)
+}
+
+func Err(name string, err error) variable.Error {
+	return variable.Err(name, variable.TypeArgument, err)
 }

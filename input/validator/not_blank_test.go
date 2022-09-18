@@ -5,12 +5,14 @@ import (
 	"testing"
 	"time"
 
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/validator"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 func TestNotBlank(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]struct {
 		flag  flag.Flag
 		value value.Value
@@ -103,7 +105,7 @@ func TestNotBlank(t *testing.T) {
 		}
 
 		if err := valid(ca.empty); err == nil || !errors.Is(err, validator.ErrNotBlank) {
-			t.Errorf("case: %s, expect: %s, got:%s", name, validator.ErrNotBlank, err)
+			t.Errorf("case empty: %s, expect: %s, got:%s", name, validator.ErrNotBlank, err)
 		}
 	}
 }

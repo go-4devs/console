@@ -4,20 +4,21 @@ import (
 	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/option"
+	"gitoa.ru/go-4devs/console/input/variable"
 )
 
 func NewDefinition() *Definition {
 	return &Definition{
-		options: make(map[string]option.Option),
-		args:    make(map[string]argument.Argument),
+		options: make(map[string]variable.Variable),
+		args:    make(map[string]variable.Variable),
 		short:   make(map[string]string),
 	}
 }
 
 type Definition struct {
-	options map[string]option.Option
+	options map[string]variable.Variable
 	posOpt  []string
-	args    map[string]argument.Argument
+	args    map[string]variable.Variable
 	posArgs []string
 	short   map[string]string
 }
@@ -30,11 +31,11 @@ func (d *Definition) Arguments() []string {
 	return d.posArgs
 }
 
-func (d *Definition) SetOption(name, description string, opts ...func(*option.Option)) *Definition {
-	return d.SetOptions(option.New(name, description, opts...))
+func (d *Definition) SetOption(name, description string, opts ...variable.Option) *Definition {
+	return d.SetOptions(option.String(name, description, opts...))
 }
 
-func (d *Definition) SetOptions(opts ...option.Option) *Definition {
+func (d *Definition) SetOptions(opts ...variable.Variable) *Definition {
 	for _, opt := range opts {
 		if _, has := d.options[opt.Name]; !has {
 			d.posOpt = append([]string{opt.Name}, d.posOpt...)
@@ -42,18 +43,18 @@ func (d *Definition) SetOptions(opts ...option.Option) *Definition {
 
 		d.options[opt.Name] = opt
 		if opt.HasShort() {
-			d.short[opt.Short] = opt.Name
+			d.short[opt.Alias] = opt.Name
 		}
 	}
 
 	return d
 }
 
-func (d *Definition) SetArgument(name, description string, opts ...func(*argument.Argument)) *Definition {
-	return d.SetArguments(argument.New(name, description, opts...))
+func (d *Definition) SetArgument(name, description string, opts ...variable.Option) *Definition {
+	return d.SetArguments(argument.String(name, description, opts...))
 }
 
-func (d *Definition) SetArguments(args ...argument.Argument) *Definition {
+func (d *Definition) SetArguments(args ...variable.Variable) *Definition {
 	for _, arg := range args {
 		if _, ok := d.args[arg.Name]; !ok {
 			d.posArgs = append(d.posArgs, arg.Name)
@@ -65,9 +66,9 @@ func (d *Definition) SetArguments(args ...argument.Argument) *Definition {
 	return d
 }
 
-func (d *Definition) Argument(pos int) (argument.Argument, error) {
+func (d *Definition) Argument(pos int) (variable.Variable, error) {
 	if len(d.posArgs) == 0 {
-		return argument.Argument{}, errs.ErrNoArgs
+		return variable.Variable{}, errs.ErrNoArgs
 	}
 
 	lastPos := len(d.posArgs) - 1
@@ -77,25 +78,25 @@ func (d *Definition) Argument(pos int) (argument.Argument, error) {
 			return arg, nil
 		}
 
-		return argument.Argument{}, errs.ErrToManyArgs
+		return variable.Variable{}, errs.ErrToManyArgs
 	}
 
 	return d.args[d.posArgs[pos]], nil
 }
 
-func (d *Definition) ShortOption(short string) (option.Option, error) {
+func (d *Definition) ShortOption(short string) (variable.Variable, error) {
 	name, ok := d.short[short]
 	if !ok {
-		return option.Option{}, errs.ErrNotFound
+		return variable.Variable{}, errs.ErrNotFound
 	}
 
 	return d.Option(name)
 }
 
-func (d *Definition) Option(name string) (option.Option, error) {
+func (d *Definition) Option(name string) (variable.Variable, error) {
 	if opt, ok := d.options[name]; ok {
 		return opt, nil
 	}
 
-	return option.Option{}, errs.ErrNotFound
+	return variable.Variable{}, errs.ErrNotFound
 }

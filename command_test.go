@@ -8,17 +8,16 @@ import (
 	"time"
 
 	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/output"
 )
 
-//nolint: gochecknoinits
+//nolint:gochecknoinits
 func init() {
 	console.MustRegister(Command().With(console.WithName("fdevs:console:test")))
-	console.MustRegister(command.Args())
+	console.MustRegister(Command().With(console.WithName("fdevs:console:arg")))
 }
 
 func Command() *console.Command {
@@ -38,10 +37,10 @@ func Command() *console.Command {
 		Configure: func(ctx context.Context, def *input.Definition) error {
 			def.
 				SetArguments(
-					argument.New("test_argument", "test argument"),
+					argument.String("test_argument", "test argument"),
 				).
 				SetOptions(
-					option.New("string", "array string", option.Array),
+					option.String("string", "array string", option.Array),
 					option.Bool("bool", "test bool option"),
 					option.Duration("duration", "test duration with default", option.Default(time.Second)),
 				)
@@ -52,6 +51,8 @@ func Command() *console.Command {
 }
 
 func TestChainPrepare(t *testing.T) {
+	t.Parallel()
+
 	var cnt int32
 
 	ctx := context.Background()
@@ -86,10 +87,14 @@ func TestChainPrepare(t *testing.T) {
 }
 
 func TestChainHandle(t *testing.T) {
+	t.Parallel()
+
 	var cnt int32
 
 	ctx := context.Background()
-	in := &input.Array{}
+	in := &input.Array{
+		Map: input.Map{},
+	}
 	out := output.Stdout()
 
 	handle := func(ctx context.Context, in input.Input, out output.Output, next console.Action) error {

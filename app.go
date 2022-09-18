@@ -25,9 +25,7 @@ func WithInput(in input.Input) func(*App) {
 
 // WithSkipArgs sets how many arguments are passed. For example, you don't need to pass the name of a single command.
 func WithSkipArgs(l int) func(*App) {
-	return func(a *App) {
-		a.skipArgv = l
-	}
+	return WithInput(input.NewArgs(l))
 }
 
 // WithExit sets exit callback by default os.Exit.
@@ -39,44 +37,25 @@ func WithExit(f func(int)) func(*App) {
 
 // New creates and configure new console app.
 func New(opts ...func(*App)) *App {
-	a := &App{
+	app := &App{
 		out:  output.Stdout(),
 		exit: os.Exit,
+		in:   input.NewArgs(0),
 	}
 
 	for _, opt := range opts {
-		opt(a)
+		opt(app)
 	}
 
-	if a.in == nil {
-		skip := 2
-
-		switch {
-		case a.skipArgv > 0 && len(os.Args) > a.skipArgv:
-			skip = a.skipArgv
-		case a.skipArgv > 0:
-			skip = len(os.Args)
-		case len(os.Args) == 1:
-			skip = 1
-		case len(os.Args) > 1 && os.Args[1][0] == '-':
-			skip = 1
-		}
-
-		a.in = &input.Argv{
-			Args: os.Args[skip:],
-		}
-	}
-
-	return a
+	return app
 }
 
 // App is collection of command and configure env.
 type App struct {
-	cmds     []*Command
-	out      output.Output
-	in       input.Input
-	skipArgv int
-	exit     func(int)
+	cmds []*Command
+	out  output.Output
+	in   input.Input
+	exit func(int)
 }
 
 // Add add or replace command.

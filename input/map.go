@@ -2,15 +2,16 @@ package input
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/input/value/flag"
+	"gitoa.ru/go-4devs/console/input/variable"
 )
 
 type Map struct {
-	opts map[string]value.Append
-	args map[string]value.Append
+	opts map[string]value.Value
+	args map[string]value.Value
 	sync.Mutex
 }
 
@@ -42,15 +43,15 @@ func (m *Map) HasOption(name string) bool {
 	return ok
 }
 
-func (m *Map) SetOption(name string, v interface{}) {
+func (m *Map) SetOption(name string, val interface{}) {
 	m.Lock()
 	defer m.Unlock()
 
 	if m.opts == nil {
-		m.opts = make(map[string]value.Append)
+		m.opts = make(map[string]value.Value)
 	}
 
-	m.opts[name] = value.New(v)
+	m.opts[name] = value.New(val)
 }
 
 func (m *Map) HasArgument(name string) bool {
@@ -59,29 +60,59 @@ func (m *Map) HasArgument(name string) bool {
 	return ok
 }
 
-func (m *Map) SetArgument(name string, v interface{}) {
+func (m *Map) SetArgument(name string, val interface{}) {
 	m.Lock()
 	defer m.Unlock()
 
 	if m.args == nil {
-		m.args = make(map[string]value.Append)
+		m.args = make(map[string]value.Value)
 	}
 
-	m.args[name] = value.New(v)
+	m.args[name] = value.New(val)
 }
 
-func (m *Map) AppendOption(f flag.Flag, name, val string) error {
-	if _, ok := m.opts[name]; !ok {
-		m.SetOption(name, value.ByFlag(f))
+func (m *Map) AppendOption(opt variable.Variable, val string) error {
+	old, ok := m.opts[opt.Name]
+	if !ok {
+		value, err := opt.Create(val)
+		if err != nil {
+			return fmt.Errorf("append option:%w", err)
+		}
+
+		m.SetOption(opt.Name, value)
+
+		return nil
 	}
 
-	return m.opts[name].Append(val)
+	value, err := opt.Append(old, val)
+	if err != nil {
+		return fmt.Errorf("append option:%w", err)
+	}
+
+	m.SetOption(opt.Name, value)
+
+	return nil
 }
 
-func (m *Map) AppendArgument(f flag.Flag, name, val string) error {
-	if _, ok := m.args[name]; !ok {
-		m.SetArgument(name, value.ByFlag(f))
+func (m *Map) AppendArgument(arg variable.Variable, val string) error {
+	old, ok := m.args[arg.Name]
+	if !ok {
+		value, err := arg.Create(val)
+		if err != nil {
+			return fmt.Errorf("append option:%w", err)
+		}
+
+		m.SetArgument(arg.Name, value)
+
+		return nil
 	}
 
-	return m.args[name].Append(val)
+	value, err := arg.Append(old, val)
+	if err != nil {
+		return fmt.Errorf("append option:%w", err)
+	}
+
+	m.SetArgument(arg.Name, value)
+
+	return nil
 }

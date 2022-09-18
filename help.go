@@ -8,14 +8,15 @@ import (
 
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/validator"
-	"gitoa.ru/go-4devs/console/input/value/flag"
+	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/descriptor"
 )
 
-//nolint: gochecknoinits
+//nolint:gochecknoinits
 func init() {
 	MustRegister(help())
 }
@@ -43,18 +44,18 @@ To display the list of available commands, please use the <info>list</info> comm
 
 			des, err := descriptor.Find(format)
 			if err != nil {
-				return err
+				return fmt.Errorf("find descriptor: %w", err)
 			}
 
 			cmd, err := Find(name)
 			if err != nil {
-				return err
+				return fmt.Errorf("find cmd: %w", err)
 			}
 
 			def := input.NewDefinition()
 
 			if err := cmd.Init(ctx, Default(def)); err != nil {
-				return err
+				return fmt.Errorf("init cmd: %w", err)
 			}
 
 			var bin string
@@ -62,22 +63,28 @@ To display the list of available commands, please use the <info>list</info> comm
 				bin = os.Args[0]
 			}
 
-			return des.Command(ctx, out, descriptor.Command{
+			derr := des.Command(ctx, out, descriptor.Command{
 				Bin:         bin,
 				Name:        cmd.Name,
 				Description: cmd.Description,
 				Help:        cmd.Help,
 				Definition:  def,
 			})
+
+			if derr != nil {
+				return fmt.Errorf("descriptor help:%w", derr)
+			}
+
+			return nil
 		},
 		Configure: func(ctx context.Context, config *input.Definition) error {
 			formats := descriptor.Descriptors()
 			config.
 				SetArguments(
-					argument.New(HelpArgumentCommandName, "The command name", argument.Default("help")),
+					argument.String(HelpArgumentCommandName, "The command name", argument.Default(value.New("help"))),
 				).
 				SetOptions(
-					option.New(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
+					option.String(helpOptFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
 						option.Default(formats[0]),
 						option.Valid(

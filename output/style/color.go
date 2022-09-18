@@ -28,13 +28,13 @@ const (
 type Option string
 
 func (o Option) Apply(action int) string {
-	v := string(o)
+	out := string(o)
 
 	switch action {
 	case ActionSet:
-		return v[0:1]
+		return out[0:1]
 	case ActionUnset:
-		return v[1:]
+		return out[1:]
 	}
 
 	return ""

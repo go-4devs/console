@@ -20,31 +20,31 @@ var (
 	ErrCommandDuplicate = errors.New("console: duplicate command")
 )
 
-//nolint: gochecknoglobals
+//nolint:gochecknoglobals
 var (
 	commandsMu  sync.RWMutex
 	commands    = make(map[string]*Command)
 	findCommand = regexp.MustCompile("([^:]+|)")
 )
 
-type ErrorAlternatives struct {
+type AlternativesError struct {
 	alt []string
 	err error
 }
 
-func (e ErrorAlternatives) Error() string {
+func (e AlternativesError) Error() string {
 	return fmt.Sprintf("%s, alternatives: [%s]", e.err, strings.Join(e.alt, ","))
 }
 
-func (e ErrorAlternatives) Is(err error) bool {
+func (e AlternativesError) Is(err error) bool {
 	return errors.Is(e.err, err)
 }
 
-func (e ErrorAlternatives) Unwrap() error {
+func (e AlternativesError) Unwrap() error {
 	return e.err
 }
 
-func (e ErrorAlternatives) Alternatives() []string {
+func (e AlternativesError) Alternatives() []string {
 	return e.alt
 }
 
@@ -115,7 +115,7 @@ func Find(name string) (*Command, error) {
 
 	cmdRegexp, err := regexp.Compile("^" + nameRegexp + "$")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("find by regexp:%w", err)
 	}
 
 	for name := range commands {
@@ -134,7 +134,7 @@ func Find(name string) (*Command, error) {
 			names[i] = findCommands[i].Name
 		}
 
-		return nil, ErrorAlternatives{alt: names, err: ErrNotFound}
+		return nil, AlternativesError{alt: names, err: ErrNotFound}
 	}
 
 	return nil, ErrNotFound

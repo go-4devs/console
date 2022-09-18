@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/value"
-	"gitoa.ru/go-4devs/console/input/value/flag"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -43,7 +43,7 @@ var (
 {{- help . }}
 		`))
 
-	txtListTempkate = template.Must(template.New("txt_list").
+	txtListTemplate = template.Must(template.New("txt_list").
 			Funcs(txtFunc).
 			Parse(`<comment>Usage:</comment>
   command [options] [arguments]
@@ -58,7 +58,7 @@ func (t *txt) Command(ctx context.Context, out output.Output, cmd Command) error
 	var tpl bytes.Buffer
 
 	if err := txtHelpTemplate.Execute(&tpl, cmd); err != nil {
-		return err
+		return fmt.Errorf("execute txt help tpl:%w", err)
 	}
 
 	out.Println(ctx, tpl.String())
@@ -69,8 +69,8 @@ func (t *txt) Command(ctx context.Context, out output.Output, cmd Command) error
 func (t *txt) Commands(ctx context.Context, out output.Output, cmds Commands) error {
 	var buf bytes.Buffer
 
-	if err := txtListTempkate.Execute(&buf, cmds); err != nil {
-		return err
+	if err := txtListTemplate.Execute(&buf, cmds); err != nil {
+		return fmt.Errorf("execute txt list tpl:%w", err)
 	}
 
 	out.Println(ctx, buf.String())
@@ -78,36 +78,37 @@ func (t *txt) Commands(ctx context.Context, out output.Output, cmds Commands) er
 	return nil
 }
 
-func txtDefaultArray(v value.Value, f flag.Flag) string {
-	st := v.Strings()
+//nolint:cyclop
+func txtDefaultArray(val value.Value, fl flag.Flag) string {
+	st := val.Strings()
 
 	switch {
-	case f.IsInt():
-		for _, i := range v.Ints() {
+	case fl.IsInt():
+		for _, i := range val.Ints() {
 			st = append(st, strconv.Itoa(i))
 		}
-	case f.IsInt64():
-		for _, i := range v.Int64s() {
+	case fl.IsInt64():
+		for _, i := range val.Int64s() {
 			st = append(st, strconv.FormatInt(i, 10))
 		}
-	case f.IsUint():
-		for _, u := range v.Uints() {
+	case fl.IsUint():
+		for _, u := range val.Uints() {
 			st = append(st, strconv.FormatUint(uint64(u), 10))
 		}
-	case f.IsUint64():
-		for _, u := range v.Uint64s() {
+	case fl.IsUint64():
+		for _, u := range val.Uint64s() {
 			st = append(st, strconv.FormatUint(u, 10))
 		}
-	case f.IsFloat64():
-		for _, f := range v.Float64s() {
+	case fl.IsFloat64():
+		for _, f := range val.Float64s() {
 			st = append(st, strconv.FormatFloat(f, 'g', -1, 64))
 		}
-	case f.IsDuration():
-		for _, d := range v.Durations() {
+	case fl.IsDuration():
+		for _, d := range val.Durations() {
 			st = append(st, d.String())
 		}
-	case f.IsTime():
-		for _, d := range v.Times() {
+	case fl.IsTime():
+		for _, d := range val.Times() {
 			st = append(st, d.Format(time.RFC3339))
 		}
 	}
@@ -115,32 +116,33 @@ func txtDefaultArray(v value.Value, f flag.Flag) string {
 	return strings.Join(st, ",")
 }
 
-func txtDefault(v value.Value, f flag.Flag) []byte {
+//nolint:cyclop
+func txtDefault(val value.Value, fl flag.Flag) []byte {
 	var buf bytes.Buffer
 
 	buf.WriteString("<comment> [default: ")
 
 	switch {
-	case f.IsArray():
-		buf.WriteString(txtDefaultArray(v, f))
-	case f.IsInt():
-		buf.WriteString(strconv.Itoa(v.Int()))
-	case f.IsInt64():
-		buf.WriteString(strconv.FormatInt(v.Int64(), 10))
-	case f.IsUint():
-		buf.WriteString(strconv.FormatUint(uint64(v.Uint()), 10))
-	case f.IsUint64():
-		buf.WriteString(strconv.FormatUint(v.Uint64(), 10))
-	case f.IsFloat64():
-		buf.WriteString(strconv.FormatFloat(v.Float64(), 'g', -1, 64))
-	case f.IsDuration():
-		buf.WriteString(v.Duration().String())
-	case f.IsTime():
-		buf.WriteString(v.Time().Format(time.RFC3339))
-	case f.IsAny():
-		buf.WriteString(fmt.Sprint(v.Any()))
+	case fl.IsArray():
+		buf.WriteString(txtDefaultArray(val, fl))
+	case fl.IsInt():
+		buf.WriteString(strconv.Itoa(val.Int()))
+	case fl.IsInt64():
+		buf.WriteString(strconv.FormatInt(val.Int64(), 10))
+	case fl.IsUint():
+		buf.WriteString(strconv.FormatUint(uint64(val.Uint()), 10))
+	case fl.IsUint64():
+		buf.WriteString(strconv.FormatUint(val.Uint64(), 10))
+	case fl.IsFloat64():
+		buf.WriteString(strconv.FormatFloat(val.Float64(), 'g', -1, 64))
+	case fl.IsDuration():
+		buf.WriteString(val.Duration().String())
+	case fl.IsTime():
+		buf.WriteString(val.Time().Format(time.RFC3339))
+	case fl.IsAny():
+		buf.WriteString(fmt.Sprint(val.Any()))
 	default:
-		buf.WriteString(v.String())
+		buf.WriteString(val.String())
 	}
 
 	buf.WriteString("]</comment>")
@@ -214,7 +216,7 @@ func txtDefinitionOption(maxLen int, def *input.Definition) string {
 
 		if opt.HasShort() {
 			op.WriteString("-")
-			op.WriteString(opt.Short)
+			op.WriteString(opt.Alias)
 			op.WriteString(", ")
 		} else {
 			op.WriteString("    ")
@@ -354,18 +356,18 @@ func totalWidth(def *input.Definition) int {
 
 	for _, name := range def.Options() {
 		opt, _ := def.Option(name)
-		l := len(opt.Name) + 6
+		current := len(opt.Name) + 6
 
 		if !opt.IsBool() {
-			l = l*2 + 1
+			current = current*2 + 1
 		}
 
 		if opt.HasDefault() {
-			l += 2
+			current += 2
 		}
 
-		if l > max {
-			max = l
+		if current > max {
+			max = current
 		}
 	}
 

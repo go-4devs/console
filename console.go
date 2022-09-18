@@ -86,14 +86,14 @@ func verbose(ctx context.Context, in input.Input, out output.Output) output.Outp
 	case in.Option(ctx, "quiet").Bool():
 		out = output.Quiet()
 	default:
-		v := in.Option(ctx, "verbose").Bools()
+		verb := in.Option(ctx, "verbose").Bools()
 
 		switch {
-		case len(v) == verboseInfo:
+		case len(verb) == verboseInfo:
 			out = output.Verbosity(out, verbosity.Info)
-		case len(v) == verboseDebug:
+		case len(verb) == verboseDebug:
 			out = output.Verbosity(out, verbosity.Debug)
-		case len(v) >= verboseTrace:
+		case len(verb) >= verboseTrace:
 			out = output.Verbosity(out, verbosity.Trace)
 		default:
 			out = output.Verbosity(out, verbosity.Norm)
@@ -104,9 +104,9 @@ func verbose(ctx context.Context, in input.Input, out output.Output) output.Outp
 }
 
 func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
-	a := &input.Array{}
-	a.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
-	a.SetOption("help", value.New(false))
+	arr := &input.Array{}
+	arr.SetArgument(HelpArgumentCommandName, value.New(cmd.Name))
+	arr.SetOption("help", value.New(false))
 
 	if _, err := Find(cmd.Name); errors.Is(err, ErrNotFound) {
 		register(cmd)
@@ -117,7 +117,7 @@ func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Outp
 		return err
 	}
 
-	w := input.Chain(a, in)
+	w := input.Chain(arr, in)
 
 	return Run(ctx, help, w, out)
 }
@@ -127,11 +127,11 @@ func Default(d *input.Definition) *input.Definition {
 	return d.SetOptions(
 		option.Bool("no-ansi", "Disable ANSI output"),
 		option.Bool("ansi", "Do not ask any interactive question"),
-		option.Bool("version", "Display this application version", option.Short("V")),
-		option.Bool("help", "Display this help message", option.Short("h")),
+		option.Bool("version", "Display this application version", option.Short('V')),
+		option.Bool("help", "Display this help message", option.Short('h')),
 		option.Bool("verbose",
 			"Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace",
-			option.Short("v"), option.Array),
-		option.Bool("quiet", "Do not output any message", option.Short("q")),
+			option.Short('v'), option.Array),
+		option.Bool("quiet", "Do not output any message", option.Short('q')),
 	)
 }

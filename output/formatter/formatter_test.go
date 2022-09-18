@@ -8,6 +8,8 @@ import (
 )
 
 func TestFormatter(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 	formatter := formatter.New()
 

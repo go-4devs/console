@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-//nolint: gochecknoglobals
+//nolint:gochecknoglobals
 var (
 	styles = map[string]Style{
 		"error":    {Foreground: White, Background: Red},

@@ -8,6 +8,8 @@ import (
 )
 
 func TestNone(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 	none := formatter.None()
 

@@ -10,6 +10,8 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 	buf := bytes.Buffer{}
 	wr := output.New(&buf, output.FormatString)

@@ -9,6 +9,8 @@ import (
 )
 
 func TestEnum(t *testing.T) {
+	t.Parallel()
+
 	validValue := value.New("valid")
 	invalidValue := value.New("invalid")
 

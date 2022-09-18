@@ -71,6 +71,7 @@ func (i Flag) IsAny() bool {
 	return i&Any > 0
 }
 
+//nolint:cyclop
 func (i Flag) Type() Flag {
 	switch {
 	case i.IsInt():

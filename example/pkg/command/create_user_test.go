@@ -12,6 +12,8 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 	buf := bytes.Buffer{}
 	out := output.Buffer(&buf)

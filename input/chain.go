@@ -2,6 +2,7 @@ package input
 
 import (
 	"context"
+	"fmt"
 
 	"gitoa.ru/go-4devs/console/input/value"
 )
@@ -35,7 +36,7 @@ func (c chain) Argument(ctx context.Context, name string) value.Value {
 func (c chain) Bind(ctx context.Context, def *Definition) error {
 	for _, input := range c {
 		if err := input.Bind(ctx, def); err != nil {
-			return err
+			return fmt.Errorf("%T:%w", input, err)
 		}
 	}
 

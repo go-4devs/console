@@ -5,10 +5,9 @@ import (
 	"os"
 
 	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
 )
 
-//nolint: lll
+//nolint:lll
 func ExampleNew_help() {
 	ctx := context.Background()
 	os.Args = []string{
@@ -56,9 +55,18 @@ func ExampleNew_list() {
 	console.New(console.WithExit(func(int) {})).
 		Add(
 			Command(),
-			command.Hello(),
-			command.Args(),
-			command.Namespace(),
+			&console.Command{
+				Name:        "fdevs:console:arg",
+				Description: "Understanding how Console Arguments and Options Are Handled",
+			},
+			&console.Command{
+				Name:        "fdevs:console:hello",
+				Description: "example hello command",
+			},
+			&console.Command{
+				Name:        "app:start",
+				Description: "example command in other namespace",
+			},
 		).
 		Execute(ctx)
 	// Output:

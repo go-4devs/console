@@ -7,6 +7,8 @@ import (
 )
 
 func TestFind(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]string{
 		"fdevs:console:test": "fdevs:console:test",
 		"fd:c:t":             "fdevs:console:test",
@@ -18,13 +20,13 @@ func TestFind(t *testing.T) {
 	for name, ex := range cases {
 		res, err := console.Find(name)
 		if err != nil {
-			t.Errorf("expect <nil> err, got:%s", err)
+			t.Errorf("%v expect <nil> err, got:%s", name, err)
 
 			continue
 		}
 
 		if res.Name != ex {
-			t.Errorf("expect: %s, got: %s", ex, res)
+			t.Errorf("%v expect: %s, got: %s", name, ex, res)
 		}
 	}
 }

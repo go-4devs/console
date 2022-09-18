@@ -63,15 +63,13 @@ func (o Output) Write(b []byte) (int, error) {
 }
 
 func (o Output) Writer(ctx context.Context, verb verbosity.Verbosity) io.Writer {
-	return verbosityWriter{ctx, o, verb}
+	return verbosityWriter(func(b []byte) (int, error) {
+		return o(ctx, verb, string(b))
+	})
 }
 
-type verbosityWriter struct {
-	ctx  context.Context
-	out  Output
-	verb verbosity.Verbosity
-}
+type verbosityWriter func(b []byte) (int, error)
 
 func (w verbosityWriter) Write(b []byte) (int, error) {
-	return w.out(w.ctx, w.verb, string(b))
+	return w(b)
 }

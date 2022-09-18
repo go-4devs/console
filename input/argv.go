@@ -3,13 +3,33 @@ package input
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
+	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/errs"
 	"gitoa.ru/go-4devs/console/input/option"
+	"gitoa.ru/go-4devs/console/input/variable"
 )
 
 const doubleDash = `--`
+
+func NewArgs(skip int) *Argv {
+	res := 2
+
+	switch {
+	case skip > 0 && len(os.Args) > skip:
+		res = skip
+	case skip > 0:
+		res = len(os.Args)
+	case len(os.Args) == 1:
+		res = 1
+	case len(os.Args) > 1 && os.Args[1][0] == '-':
+		res = 1
+	}
+
+	return &Argv{Args: os.Args[res:]}
+}
 
 type Argv struct {
 	Array
@@ -17,6 +37,7 @@ type Argv struct {
 	ErrHandle func(error) error
 }
 
+//nolint:cyclop
 func (i *Argv) Bind(ctx context.Context, def *Definition) error {
 	options := true
 
@@ -64,13 +85,13 @@ func (i *Argv) parseLongOption(arg string, def *Definition) error {
 
 	opt, err := def.Option(name)
 	if err != nil {
-		return errs.Option(name, err)
+		return option.Err(name, err)
 	}
 
 	return i.appendOption(name, value, opt)
 }
 
-func (i *Argv) appendOption(name string, data *string, opt option.Option) error {
+func (i *Argv) appendOption(name string, data *string, opt variable.Variable) error {
 	if i.HasOption(name) && !opt.IsArray() {
 		return fmt.Errorf("%w: got: array, expect: %s", errs.ErrUnexpectedType, opt.Flag.Type())
 	}
@@ -86,11 +107,11 @@ func (i *Argv) appendOption(name string, data *string, opt option.Option) error 
 		val = i.Args[0]
 		i.Args = i.Args[1:]
 	default:
-		return errs.Option(name, errs.ErrRequired)
+		return option.Err(name, errs.ErrRequired)
 	}
 
-	if err := i.AppendOption(opt.Flag, name, val); err != nil {
-		return errs.Option(name, err)
+	if err := i.AppendOption(opt, val); err != nil {
+		return option.Err(name, err)
 	}
 
 	return nil
@@ -131,8 +152,8 @@ func (i *Argv) parseArgument(arg string, def *Definition) error {
 		return err
 	}
 
-	if err := i.AppendArgument(opt.Flag, opt.Name, arg); err != nil {
-		return errs.Argument(opt.Name, err)
+	if err := i.AppendArgument(opt, arg); err != nil {
+		return argument.Err(opt.Name, err)
 	}
 
 	return nil

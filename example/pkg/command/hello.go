@@ -25,7 +25,7 @@ func Hello() *console.Command {
 		},
 		Configure: func(_ context.Context, def *input.Definition) error {
 			def.SetArguments(
-				argument.New("name", "Same name", argument.Default("World")),
+				argument.String("name", "Same name", argument.Default("World")),
 			)
 
 			return nil

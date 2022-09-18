@@ -6,9 +6,9 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/flag"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/validator"
-	"gitoa.ru/go-4devs/console/input/value/flag"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -41,7 +41,7 @@ func Long() *console.Command {
 		Configure: func(ctx context.Context, def *input.Definition) error {
 			def.SetOptions(option.Duration("timeout", "set duration run command",
 				option.Default(defaultTimeout),
-				option.Short("t"),
+				option.Short('t'),
 				option.Valid(validator.NotBlank(flag.Duration)),
 			))
 

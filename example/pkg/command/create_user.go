@@ -6,6 +6,7 @@ import (
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
+	"gitoa.ru/go-4devs/console/input/variable"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -15,7 +16,7 @@ func CreateUser(required bool) *console.Command {
 		Description: "Creates a new user.",
 		Help:        "This command allows you to create a user...",
 		Configure: func(ctx context.Context, cfg *input.Definition) error {
-			var opts []func(*argument.Argument)
+			var opts []variable.Option
 			if required {
 				opts = append(opts, argument.Required)
 			}

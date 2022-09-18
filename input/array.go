@@ -3,7 +3,9 @@ package input
 import (
 	"context"
 
+	"gitoa.ru/go-4devs/console/input/argument"
 	"gitoa.ru/go-4devs/console/input/errs"
+	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/value"
 )
 
@@ -58,7 +60,7 @@ func (a *Array) bindOption(ctx context.Context, def *Definition) error {
 
 				continue
 			case opt.IsRequired():
-				return errs.Option(name, errs.ErrRequired)
+				return option.Err(name, errs.ErrRequired)
 			default:
 				continue
 			}
@@ -70,7 +72,7 @@ func (a *Array) bindOption(ctx context.Context, def *Definition) error {
 		}
 
 		if err := opt.Validate(v); err != nil {
-			return errs.Option(name, err)
+			return option.Err(name, err)
 		}
 	}
 
@@ -91,7 +93,7 @@ func (a *Array) bindArguments(ctx context.Context, def *Definition) error {
 
 				continue
 			case arg.IsRequired():
-				return errs.Argument(name, errs.ErrRequired)
+				return argument.Err(name, errs.ErrRequired)
 			default:
 				continue
 			}
@@ -99,7 +101,7 @@ func (a *Array) bindArguments(ctx context.Context, def *Definition) error {
 
 		if v := a.Map.Argument(ctx, name); !value.IsEmpty(v) {
 			if err := arg.Validate(v); err != nil {
-				return errs.Argument(name, err)
+				return argument.Err(name, err)
 			}
 		}
 	}

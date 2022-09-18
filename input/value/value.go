@@ -2,11 +2,19 @@ package value
 
 import (
 	"time"
-
-	"gitoa.ru/go-4devs/console/input/value/flag"
 )
 
 type Value interface {
+	ReadValue
+	ParseValue
+	ArrValue
+}
+
+type UnmarshalValue interface {
+	Unmarshal(val interface{}) error
+}
+
+type ReadValue interface {
 	String() string
 	Int() int
 	Int64() int64
@@ -16,8 +24,19 @@ type Value interface {
 	Bool() bool
 	Duration() time.Duration
 	Time() time.Time
-	Any() interface{}
+}
 
+type AnyValue interface {
+	Any() interface{}
+}
+
+type SliceValue interface {
+	AnyValue
+	UnmarshalValue
+	ArrValue
+}
+
+type ArrValue interface {
 	Strings() []string
 	Ints() []int
 	Int64s() []int64
@@ -29,86 +48,74 @@ type Value interface {
 	Times() []time.Time
 }
 
+//nolint:interfacebloat
+type ParseValue interface {
+	ParseString() (string, error)
+	ParseInt() (int, error)
+	ParseInt64() (int64, error)
+	ParseUint() (uint, error)
+	ParseUint64() (uint64, error)
+	ParseFloat64() (float64, error)
+	ParseBool() (bool, error)
+	ParseDuration() (time.Duration, error)
+	ParseTime() (time.Time, error)
+	UnmarshalValue
+	AnyValue
+}
+
 type Append interface {
 	Value
-	Append(string) error
+	Append(string) (Value, error)
 }
 
-//nolint: gocyclo
-func New(v interface{}) Append {
-	switch val := v.(type) {
-	case string:
-		return &String{Val: []string{val}, Flag: flag.String}
-	case int:
-		return &Int{Val: []int{val}, Flag: flag.Int}
-	case int64:
-		return &Int64{Val: []int64{val}, Flag: flag.Int64}
-	case uint:
-		return &Uint{Val: []uint{val}, Flag: flag.Uint}
-	case uint64:
-		return &Uint64{Val: []uint64{val}, Flag: flag.Uint64}
-	case float64:
-		return &Float64{Val: []float64{val}, Flag: flag.Float64}
+//nolint:gocyclo,cyclop
+func New(in interface{}) Value {
+	switch val := in.(type) {
 	case bool:
-		return &Bool{Val: []bool{val}, Flag: flag.Bool}
-	case time.Duration:
-		return &Duration{Val: []time.Duration{val}, Flag: flag.Duration}
-	case time.Time:
-		return &Time{Val: []time.Time{val}, Flag: flag.Time}
-	case []int64:
-		return &Int64{Val: val, Flag: flag.Int64 | flag.Array}
-	case []uint:
-		return &Uint{Val: val, Flag: flag.Uint | flag.Array}
-	case []uint64:
-		return &Uint64{Val: val, Flag: flag.Uint64 | flag.Array}
-	case []float64:
-		return &Float64{Val: val, Flag: flag.Float64 | flag.Array}
+		return Read{Bool(val)}
 	case []bool:
-		return &Bool{Val: val, Flag: flag.Bool | flag.Array}
+		return NewBools(val)
+	case string:
+		return Read{String(val)}
+	case int:
+		return Read{Int(val)}
+	case int64:
+		return Read{Int64(val)}
+	case uint:
+		return Read{Uint(val)}
+	case uint64:
+		return Read{Uint64(val)}
+	case float64:
+		return Read{Float64(val)}
+	case time.Duration:
+		return Read{Duration(val)}
+	case time.Time:
+		return Read{Time{val}}
+	case []int64:
+		return Slice{Int64s(val)}
+	case []uint:
+		return Slice{Uints(val)}
+	case []uint64:
+		return Slice{Uint64s(val)}
+	case []float64:
+		return Slice{Float64s(val)}
 	case []time.Duration:
-		return &Duration{Val: val, Flag: flag.Duration | flag.Array}
+		return Slice{Durations(val)}
 	case []time.Time:
-		return &Time{Val: val, Flag: flag.Time | flag.Array}
+		return Slice{Times(val)}
 	case []string:
-		return &String{Val: val, Flag: flag.String | flag.Array}
+		return Slice{Strings(val)}
 	case []int:
-		return &Int{Val: val, Flag: flag.Int | flag.Array}
+		return Slice{Ints(val)}
 	case []interface{}:
-		return &Any{Val: val, Flag: flag.Any | flag.Array}
-	case Append:
-		return val
+		return Read{Any{v: val}}
 	case Value:
-		return &Read{Value: val}
+		return val
 	default:
-		if v != nil {
-			return &Any{Val: []interface{}{v}, Flag: flag.Any}
+		if in != nil {
+			return Read{Any{v: in}}
 		}
 
-		return &empty{}
-	}
-}
-
-func ByFlag(f flag.Flag) Append {
-	switch {
-	case f.IsInt():
-		return &Int{Flag: f | flag.Int}
-	case f.IsInt64():
-		return &Int64{Flag: f | flag.Int64}
-	case f.IsUint():
-		return &Uint{Flag: f | flag.Uint}
-	case f.IsUint64():
-		return &Uint64{Flag: f | flag.Uint64}
-	case f.IsFloat64():
-		return &Float64{Flag: f | flag.Float64}
-	case f.IsBool():
-		return &Bool{Flag: f | flag.Bool}
-	case f.IsDuration():
-		return &Duration{Flag: f | flag.Duration}
-	case f.IsTime():
-		return &Time{Flag: f | flag.Time}
-	case f.IsAny():
-		return &Any{Flag: f | flag.Any}
-	default:
-		return &String{}
+		return Empty()
 	}
 }
