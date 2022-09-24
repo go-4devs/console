@@ -100,6 +100,10 @@ func (c *Command) With(opts ...Option) *Command {
 
 // Run run command with input and output.
 func (c *Command) Run(ctx context.Context, in input.Input, out output.Output) error {
+	if c.Execute == nil {
+		return fmt.Errorf("%w", ErrExecuteNil)
+	}
+
 	if c.Handle != nil {
 		return c.Handle(ctx, in, out, c.Execute)
 	}
