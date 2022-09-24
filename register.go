@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
-	"strings"
 	"sync"
 )
 
@@ -14,39 +13,12 @@ const (
 	CommandList = "list"
 )
 
-var (
-	ErrNotFound         = errors.New("command not found")
-	ErrCommandNil       = errors.New("console: Register command is nil")
-	ErrCommandDuplicate = errors.New("console: duplicate command")
-)
-
 //nolint:gochecknoglobals
 var (
 	commandsMu  sync.RWMutex
 	commands    = make(map[string]*Command)
 	findCommand = regexp.MustCompile("([^:]+|)")
 )
-
-type AlternativesError struct {
-	alt []string
-	err error
-}
-
-func (e AlternativesError) Error() string {
-	return fmt.Sprintf("%s, alternatives: [%s]", e.err, strings.Join(e.alt, ","))
-}
-
-func (e AlternativesError) Is(err error) bool {
-	return errors.Is(e.err, err)
-}
-
-func (e AlternativesError) Unwrap() error {
-	return e.err
-}
-
-func (e AlternativesError) Alternatives() []string {
-	return e.alt
-}
 
 // MustRegister register command or panic if err.
 func MustRegister(cmd *Command) {
@@ -134,7 +106,7 @@ func Find(name string) (*Command, error) {
 			names[i] = findCommands[i].Name
 		}
 
-		return nil, AlternativesError{alt: names, err: ErrNotFound}
+		return nil, AlternativesError{Alt: names, Err: ErrNotFound}
 	}
 
 	return nil, ErrNotFound

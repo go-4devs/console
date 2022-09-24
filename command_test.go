@@ -2,6 +2,7 @@ package console_test
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -123,5 +124,23 @@ func TestChainHandle(t *testing.T) {
 		if cnt != int32(i) {
 			t.Fatalf("expected: call prepare 1, got: %d ", cnt)
 		}
+	}
+}
+
+func TestRunEmptyExecute(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	empty := console.Command{
+		Name: "empty",
+	}
+	in := &input.Array{
+		Map: input.Map{},
+	}
+	out := output.Stdout()
+
+	err := empty.Run(ctx, in, out)
+	if !errors.Is(err, console.ErrExecuteNil) {
+		t.Fatalf("expected: %v, got: %v ", console.ErrExecuteNil, err)
 	}
 }
