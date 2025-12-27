@@ -1,7 +1,6 @@
 # Console
 
-
-[![Build Status](https://drone.gitoa.ru/api/badges/go-4devs/console/status.svg)](https://drone.gitoa.ru/go-4devs/console)
+![Build Status](https://gitoa.ru/go-4devs/console/actions/workflows/goaction.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/gitoa.ru/go-4devs/console)](https://goreportcard.com/report/gitoa.ru/go-4devs/console)
 [![GoDoc](https://godoc.org/gitoa.ru/go-4devs/console?status.svg)](http://godoc.org/gitoa.ru/go-4devs/console)
 
@@ -17,14 +16,14 @@ import (
 	"context"
 
 	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/output"
+	"gitoa.ru/go-4devs/config"
 )
 
 func CreateUser() *console.Command {
 	return &console.Command{
 		Name: "app:create-user",
-		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
+		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
 			return nil
 		},
 	}
@@ -49,12 +48,14 @@ func CreateUser() *console.Command {
 func CreateUser(required bool) *console.Command {
 	return &console.Command{
         //....
-		Configure: func(ctx context.Context, cfg *input.Definition) error {
-			var opts []func(*input.Argument)
+		Configure: func(ctx context.Context, cfg config.Definition) error {
+			var opts []func(*arg.Option)
 			if required {
-				opts = append(opts, argument.Required)
+				opts = append(opts, arg.Required)
 			}
-			cfg.SetArgument("password", "User password", opts...)
+			cfg.Add(
+					arg.String("password", "User password", opts...)
+				)
 
 			return nil
 		},
@@ -98,7 +99,7 @@ The Execute field has access to the output stream to write messages to the conso
 func CreateUser(required bool) *console.Command {
 	return &console.Command{
         // ....
-		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
+		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
 			// outputs a message followed by a "\n"
 			out.Println(ctx, "User Creator")
 			out.Println(ctx, "Whoa!")
@@ -128,21 +129,23 @@ Use input options or arguments to pass information to the command:
 ```go
 func CreateUser(required bool) *console.Command {
 	return &console.Command{
-		Configure: func(ctx context.Context, cfg *input.Definition) error {
+		Configure: func(ctx context.Context, cfg config.Definition) error {
 			var opts []func(*input.Argument)
 			if required {
 				opts = append(opts, argument.Required)
 			}
-			cfg.
-				SetArgument("username", "The username of the user.", argument.Required).
-				SetArgument("password", "User password", opts...)
+			cfg.Add(
+				arg.String("username", "The username of the user.", arg.Required),
+				arg.String("password", "User password", opts...),
+			)
 
 			return nil
 		},
-		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
+		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
 			// outputs a message followed by a "\n"
+			username, _ := in.Value(ctx, "username")
 			out.Println(ctx, "User Creator")
-			out.Println(ctx, "Username: ", in.Argument(ctx, "username").String())
+			out.Println(ctx, "Username: ", username.String())
 
 			return nil
 		},
@@ -170,14 +173,14 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/console/input/array"
+	"gitoa.ru/go-4devs/config/provider/memory"
 	"gitoa.ru/go-4devs/console/output"
 )
 
 func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
-	in := input.Array{}
-    in.SetArgument("username","andrey")
+	in := memory.Map{}
+    in.Set("andrey","username")
 	buf := bytes.Buffer{}
 	out := output.Buffer(&buf)
 
