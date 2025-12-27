@@ -20,9 +20,9 @@ const _Verbosity_name = "quietnorminfodebugtrace"
 var _Verbosity_index = [...]uint8{0, 5, 9, 13, 18, 23}
 
 func (i Verbosity) String() string {
-	i -= -1
-	if i < 0 || i >= Verbosity(len(_Verbosity_index)-1) {
-		return "Verbosity(" + strconv.FormatInt(int64(i+-1), 10) + ")"
+	idx := int(i) - -1
+	if i < -1 || idx >= len(_Verbosity_index)-1 {
+		return "Verbosity(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Verbosity_name[_Verbosity_index[i]:_Verbosity_index[i+1]]
+	return _Verbosity_name[_Verbosity_index[idx]:_Verbosity_index[idx+1]]
 }
