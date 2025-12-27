@@ -1,6 +1,6 @@
 package verbosity
 
-//go:generate stringer -type=Verbosity -linecomment
+//go:generate go tool stringer -type=Verbosity -linecomment
 
 type Verbosity int
 
