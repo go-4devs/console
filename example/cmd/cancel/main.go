@@ -21,5 +21,6 @@ func main() {
 		<-ch
 		cancel()
 	}()
+
 	console.Execute(ctx, command.Long())
 }

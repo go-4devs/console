@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
+	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/config/definition/option"
 	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/key"
-	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -15,8 +14,8 @@ func Args() *console.Command {
 	return &console.Command{
 		Name:        "fdevs:console:arg",
 		Description: "Understanding how Console Arguments and Options Are Handled",
-		Configure: func(ctx context.Context, def *input.Definition) error {
-			def.SetOptions(
+		Configure: func(_ context.Context, def config.Definition) error {
+			def.Add(
 				option.Bool("foo", "foo option", option.Short('f')),
 				option.String("bar", "required bar option", option.Required, option.Short('b')),
 				option.String("cat", "cat option", option.Short('c')),
@@ -26,12 +25,12 @@ func Args() *console.Command {
 
 			return nil
 		},
-		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
-			out.Println(ctx, "foo: <info>", in.Value(ctx, key.Dash("foo")).Bool(), "</info>")
-			out.Println(ctx, "bar: <info>", in.Value(ctx, key.Dash("bar")).String(), "</info>")
-			out.Println(ctx, "cat: <info>", in.Value(ctx, key.Dash("cat")).String(), "</info>")
-			out.Println(ctx, "time: <info>", in.Value(ctx, key.Dash("time")).Time().Format(time.RFC3339), "</info>")
-			out.Println(ctx, "hidden: <info>", in.Value(ctx, key.Dash("hidden")).Time().Format(time.RFC3339), "</info>")
+		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
+			out.Println(ctx, "foo: <info>", console.ReadValue(ctx, in, "foo").Bool(), "</info>")
+			out.Println(ctx, "bar: <info>", console.ReadValue(ctx, in, "bar").String(), "</info>")
+			out.Println(ctx, "cat: <info>", console.ReadValue(ctx, in, "cat").String(), "</info>")
+			out.Println(ctx, "time: <info>", console.ReadValue(ctx, in, "time").Time().Format(time.RFC3339), "</info>")
+			out.Println(ctx, "hidden: <info>", console.ReadValue(ctx, in, "hidden").Time().Format(time.RFC3339), "</info>")
 
 			return nil
 		},
