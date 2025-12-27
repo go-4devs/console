@@ -7,7 +7,8 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/key"
+	"gitoa.ru/go-4devs/console/input/provider/memory"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -17,8 +18,8 @@ func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
 	buf := bytes.Buffer{}
 	out := output.Buffer(&buf)
-	in := &input.Array{}
-	in.SetArgument("username", "andrey")
+	in := &memory.Map{}
+	in.SetOption(key.Dash("username"), "andrey")
 
 	err := console.Run(ctx, command.CreateUser(false), in, out)
 	if err != nil {

@@ -3,11 +3,16 @@ package console
 import (
 	"context"
 	"errors"
+	"log"
+	"math"
 	"os"
 
-	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/option"
-	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/config/definition"
+	"gitoa.ru/go-4devs/config/definition/option"
+	"gitoa.ru/go-4devs/config/provider/chain"
+	"gitoa.ru/go-4devs/config/provider/memory"
+	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/verbosity"
 )
@@ -27,6 +32,10 @@ const (
 	OptionVerbose = "verbose"
 )
 
+const (
+	defaultOptionsPosition = math.MaxUint64 / 2
+)
+
 // Execute the current command with option.
 func Execute(ctx context.Context, cmd *Command, opts ...func(*App)) {
 	opts = append([]func(*App){WithSkipArgs(1)}, opts...)
@@ -34,15 +43,19 @@ func Execute(ctx context.Context, cmd *Command, opts ...func(*App)) {
 }
 
 // Run current command by input and output.
-func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
-	def := input.NewDefinition()
+func Run(ctx context.Context, cmd *Command, in config.BindProvider, out output.Output) error {
+	def := definition.New()
 
-	if err := cmd.Init(ctx, def); err != nil {
+	err := cmd.Init(ctx, def)
+	if err != nil {
 		return err
 	}
 
-	if err := in.Bind(ctx, Default(def)); err != nil {
-		ansi(ctx, in, out).Print(ctx, "<error>\n\n   ", err, "\n</error>\n")
+	def.Add(Default()...)
+
+	berr := in.Bind(ctx, config.NewVars(def.Options()...))
+	if berr != nil {
+		log.Print(berr)
 
 		return showHelp(ctx, cmd, in, output.Ansi(out))
 	}
@@ -51,7 +64,7 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 
 	out = verbose(ctx, in, out)
 
-	if in.Option(ctx, OptionVersion).Bool() {
+	if ReadValue(ctx, in, OptionVersion).Bool() {
 		version := cmd.Version
 		if version == "" {
 			version = "unknown"
@@ -62,18 +75,18 @@ func Run(ctx context.Context, cmd *Command, in input.Input, out output.Output) e
 		return nil
 	}
 
-	if in.Option(ctx, OptionHelp).Bool() {
+	if ReadValue(ctx, in, OptionHelp).Bool() {
 		return showHelp(ctx, cmd, in, out)
 	}
 
 	return cmd.Run(ctx, in, out)
 }
 
-func ansi(ctx context.Context, in input.Input, out output.Output) output.Output {
+func ansi(ctx context.Context, in config.Provider, out output.Output) output.Output {
 	switch {
-	case in.Option(ctx, OptionAnsi).Bool():
+	case ReadValue(ctx, in, OptionAnsi).Bool():
 		out = output.Ansi(out)
-	case in.Option(ctx, OptionNoAnsi).Bool():
+	case ReadValue(ctx, in, OptionNoAnsi).Bool():
 		out = output.None(out)
 	case lookupEnv("NO_COLOR"):
 		out = output.None(out)
@@ -90,12 +103,14 @@ func lookupEnv(name string) bool {
 	return has && v == "true"
 }
 
-func verbose(ctx context.Context, in input.Input, out output.Output) output.Output {
+func verbose(ctx context.Context, in config.Provider, out output.Output) output.Output {
 	switch {
-	case in.Option(ctx, OptionQuiet).Bool():
+	case ReadValue(ctx, in, OptionQuiet).Bool():
 		out = output.Quiet()
 	default:
-		verb := in.Option(ctx, OptionVerbose).Bools()
+		var verb []bool
+
+		_ = ReadValue(ctx, in, OptionVerbose).Unmarshal(&verb)
 
 		switch {
 		case len(verb) == verboseInfo:
@@ -112,10 +127,10 @@ func verbose(ctx context.Context, in input.Input, out output.Output) output.Outp
 	return out
 }
 
-func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Output) error {
-	arr := &input.Array{}
-	arr.SetArgument(ArgumentCommandName, value.New(cmd.Name))
-	arr.SetOption(OptionHelp, value.New(false))
+func showHelp(ctx context.Context, cmd *Command, in config.Provider, out output.Output) error {
+	arr := &memory.Map{}
+	arr.SetOption(value.New(cmd.Name), ArgumentCommandName)
+	arr.SetOption(value.New(false), OptionHelp)
 
 	if _, err := Find(cmd.Name); errors.Is(err, ErrNotFound) {
 		register(cmd)
@@ -126,21 +141,30 @@ func showHelp(ctx context.Context, cmd *Command, in input.Input, out output.Outp
 		return err
 	}
 
-	w := input.Chain(arr, in)
+	w := chain.New(arr, in)
 
 	return Run(ctx, help, w, out)
 }
 
 // Default options and argument command.
-func Default(d *input.Definition) *input.Definition {
-	return d.SetOptions(
-		option.Bool(OptionNoAnsi, "Disable ANSI output"),
-		option.Bool(OptionAnsi, "Do not ask any interactive question"),
-		option.Bool(OptionVersion, "Display this application version", option.Short('V')),
-		option.Bool(OptionHelp, "Display this help message", option.Short('h')),
+func Default() []config.Option {
+	return []config.Option{
+		option.Bool(OptionNoAnsi, "Disable ANSI output", option.Position(defaultOptionsPosition)),
+		option.Bool(OptionAnsi, "Do not ask any interactive question", option.Position(defaultOptionsPosition)),
+		option.Bool(OptionVersion, "Display this application version", option.Short('V'), option.Position(defaultOptionsPosition)),
+		option.Bool(OptionHelp, "Display this help message", option.Short('h'), option.Position(defaultOptionsPosition)),
 		option.Bool(OptionVerbose,
 			"Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace",
-			option.Short('v'), option.Array),
-		option.Bool(OptionQuiet, "Do not output any message", option.Short('q')),
-	)
+			option.Short('v'), option.Slice, option.Position(defaultOptionsPosition)),
+		option.Bool(OptionQuiet, "Do not output any message", option.Short('q'), option.Position(defaultOptionsPosition)),
+	}
+}
+
+func ReadValue(ctx context.Context, in config.Provider, path ...string) config.Value {
+	val, err := in.Value(ctx, path...)
+	if err != nil {
+		return value.EmptyValue()
+	}
+
+	return val
 }

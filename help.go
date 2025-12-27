@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
-	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/argument"
-	"gitoa.ru/go-4devs/console/input/flag"
-	"gitoa.ru/go-4devs/console/input/option"
-	"gitoa.ru/go-4devs/console/input/validator"
-	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/config/definition"
+	"gitoa.ru/go-4devs/config/definition/option"
+	"gitoa.ru/go-4devs/config/provider/arg"
+	"gitoa.ru/go-4devs/config/validator"
+	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/descriptor"
 )
@@ -37,14 +37,15 @@ You can also output the help in other formats by using the <comment>--format</co
   <info>{{ .Bin }} {{ .Name }} --format=xml list</info>
 To display the list of available commands, please use the <info>list</info> command.
 `,
-		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
+		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
 			var err error
-			name := in.Argument(ctx, ArgumentCommandName).String()
-			format := in.Option(ctx, OptionFormat).String()
+
+			name := ReadValue(ctx, in, ArgumentCommandName).String()
+			format := ReadValue(ctx, in, OptionFormat).String()
 
 			des, err := descriptor.Find(format)
 			if err != nil {
-				return fmt.Errorf("find descriptor: %w", err)
+				return fmt.Errorf("find descriptor[%v]: %w", format, err)
 			}
 
 			cmd, err := Find(name)
@@ -52,9 +53,10 @@ To display the list of available commands, please use the <info>list</info> comm
 				return fmt.Errorf("find cmd: %w", err)
 			}
 
-			def := input.NewDefinition()
+			def := definition.New()
+			def.Add(Default()...)
 
-			if err := cmd.Init(ctx, Default(def)); err != nil {
+			if err := cmd.Init(ctx, def); err != nil {
 				return fmt.Errorf("init cmd: %w", err)
 			}
 
@@ -68,27 +70,24 @@ To display the list of available commands, please use the <info>list</info> comm
 				Name:        cmd.Name,
 				Description: cmd.Description,
 				Help:        cmd.Help,
-				Definition:  def,
+				Definition:  descriptor.NewDefinition(config.NewVars(def.Options()...).Variables()),
 			})
-
 			if derr != nil {
 				return fmt.Errorf("descriptor help:%w", derr)
 			}
 
 			return nil
 		},
-		Configure: func(ctx context.Context, config *input.Definition) error {
+		Configure: func(_ context.Context, config config.Definition) error {
 			formats := descriptor.Descriptors()
 			config.
-				SetArguments(
-					argument.String(ArgumentCommandName, "The command name", argument.Default(value.New("help"))),
-				).
-				SetOptions(
+				Add(
+					arg.String(ArgumentCommandName, "The command name", arg.Default(value.New("help"))),
 					option.String(OptionFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
-						option.Default(formats[0]),
-						option.Valid(
-							validator.NotBlank(flag.String),
+						option.Default(value.New(formats[0])),
+						validator.Valid(
+							validator.NotBlank,
 							validator.Enum(formats...),
 						),
 					),

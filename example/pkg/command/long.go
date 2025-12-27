@@ -6,9 +6,10 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/flag"
+	"gitoa.ru/go-4devs/console/input/key"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/input/validator"
+	"gitoa.ru/go-4devs/console/input/value"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -19,7 +20,7 @@ func Long() *console.Command {
 	return &console.Command{
 		Name: "fdevs:command:long",
 		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
-			timeout := in.Option(ctx, "timeout").Duration()
+			timeout := in.Value(ctx, key.Dash("timeout")).Duration()
 			timer := time.NewTimer(timeout)
 			ticker := time.NewTicker(time.Second)
 			defer ticker.Stop()
@@ -40,9 +41,9 @@ func Long() *console.Command {
 		},
 		Configure: func(ctx context.Context, def *input.Definition) error {
 			def.SetOptions(option.Duration("timeout", "set duration run command",
-				option.Default(defaultTimeout),
+				option.Default(value.New(defaultTimeout)),
 				option.Short('t'),
-				option.Valid(validator.NotBlank(flag.Duration)),
+				validator.Valid(validator.NotBlank),
 			))
 
 			return nil

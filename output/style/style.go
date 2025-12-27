@@ -50,7 +50,8 @@ func Register(name string, style Style) error {
 }
 
 func MustRegister(name string, style Style) {
-	if err := Register(name, style); err != nil {
+	err := Register(name, style)
+	if err != nil {
 		panic(err)
 	}
 }

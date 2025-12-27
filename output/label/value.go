@@ -17,14 +17,14 @@ const (
 
 type Value struct {
 	vtype Type
-	value interface{}
+	value any
 }
 
 func (v Value) String() string {
 	return fmt.Sprint(v.value)
 }
 
-func AnyValue(v interface{}) Value {
+func AnyValue(v any) Value {
 	return Value{vtype: TypeAny, value: v}
 }
 

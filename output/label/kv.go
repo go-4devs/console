@@ -30,7 +30,7 @@ func (k KeyValue) String() string {
 	return string(k.Key) + "=\"" + k.Value.String() + "\""
 }
 
-func Any(k string, v interface{}) KeyValue {
+func Any(k string, v any) KeyValue {
 	return Key(k).Any(v)
 }
 

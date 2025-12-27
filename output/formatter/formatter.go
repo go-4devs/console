@@ -32,7 +32,7 @@ type Formatter struct {
 	styles func(string) (style.Style, error)
 }
 
-func (a *Formatter) Format(ctx context.Context, msg string) string {
+func (a *Formatter) Format(_ context.Context, msg string) string {
 	var (
 		out bytes.Buffer
 		cur int
@@ -50,8 +50,8 @@ func (a *Formatter) Format(ctx context.Context, msg string) string {
 			err error
 		)
 
-		switch {
-		case tag[0:1] == "/":
+		switch tag[0:1] {
+		case "/":
 			st, err = a.styles(tag[1:])
 			if err == nil {
 				out.WriteString(st.Set(style.ActionUnset))

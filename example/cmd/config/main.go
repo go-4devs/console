@@ -7,8 +7,11 @@ import (
 	"gitoa.ru/go-4devs/config/provider/env"
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/cfg"
+	"gitoa.ru/go-4devs/console/input/key"
+	"gitoa.ru/go-4devs/console/input/provider/argv"
+	"gitoa.ru/go-4devs/console/input/provider/chain"
+	"gitoa.ru/go-4devs/console/input/provider/memory"
 )
 
 const (
@@ -25,9 +28,12 @@ func main() {
 
 	console.
 		New(console.WithInput(
-			input.Chain(
-				input.NewArgs(0),
-				cfg.New(env.Value),
+			chain.New(
+				argv.New(0),
+				cfg.New(func(ctx context.Context, name key.Key) (config.Value, error) {
+					return env.Value(ctx, name.String())
+				}),
+				&memory.Default{},
 			),
 		)).
 		Add(

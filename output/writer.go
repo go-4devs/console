@@ -40,7 +40,7 @@ func FormatString(_ verbosity.Verbosity, msg string, kv ...label.KeyValue) strin
 }
 
 func New(w io.Writer, format func(verb verbosity.Verbosity, msg string, kv ...label.KeyValue) string) Output {
-	return func(ctx context.Context, verb verbosity.Verbosity, msg string, kv ...label.KeyValue) (int, error) {
+	return func(_ context.Context, verb verbosity.Verbosity, msg string, kv ...label.KeyValue) (int, error) {
 		out, err := fmt.Fprint(w, format(verb, msg, kv...))
 		if err != nil {
 			return 0, fmt.Errorf("writer fprint:%w", err)

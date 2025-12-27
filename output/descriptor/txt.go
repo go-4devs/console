@@ -9,15 +9,17 @@ import (
 	"text/template"
 	"time"
 
-	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/flag"
-	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/config/definition/option"
+	"gitoa.ru/go-4devs/config/param"
+	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/output"
 )
 
 const (
-	defaultSpace = 2
-	infoLen      = 13
+	defaultSpace  = 2
+	infoLen       = 13
+	dashDelimiter = "-"
 )
 
 //nolint:gochecknoglobals
@@ -57,7 +59,8 @@ type txt struct{}
 func (t *txt) Command(ctx context.Context, out output.Output, cmd Command) error {
 	var tpl bytes.Buffer
 
-	if err := txtHelpTemplate.Execute(&tpl, cmd); err != nil {
+	err := txtHelpTemplate.Execute(&tpl, cmd)
+	if err != nil {
 		return fmt.Errorf("execute txt help tpl:%w", err)
 	}
 
@@ -69,7 +72,8 @@ func (t *txt) Command(ctx context.Context, out output.Output, cmd Command) error
 func (t *txt) Commands(ctx context.Context, out output.Output, cmds Commands) error {
 	var buf bytes.Buffer
 
-	if err := txtListTemplate.Execute(&buf, cmds); err != nil {
+	err := txtListTemplate.Execute(&buf, cmds)
+	if err != nil {
 		return fmt.Errorf("execute txt list tpl:%w", err)
 	}
 
@@ -78,71 +82,47 @@ func (t *txt) Commands(ctx context.Context, out output.Output, cmds Commands) er
 	return nil
 }
 
-//nolint:cyclop
-func txtDefaultArray(val value.Value, fl flag.Flag) string {
-	st := val.Strings()
+func txtDefaultArray(val config.Value) string {
+	var st any
 
-	switch {
-	case fl.IsInt():
-		for _, i := range val.Ints() {
-			st = append(st, strconv.Itoa(i))
-		}
-	case fl.IsInt64():
-		for _, i := range val.Int64s() {
-			st = append(st, strconv.FormatInt(i, 10))
-		}
-	case fl.IsUint():
-		for _, u := range val.Uints() {
-			st = append(st, strconv.FormatUint(uint64(u), 10))
-		}
-	case fl.IsUint64():
-		for _, u := range val.Uint64s() {
-			st = append(st, strconv.FormatUint(u, 10))
-		}
-	case fl.IsFloat64():
-		for _, f := range val.Float64s() {
-			st = append(st, strconv.FormatFloat(f, 'g', -1, 64))
-		}
-	case fl.IsDuration():
-		for _, d := range val.Durations() {
-			st = append(st, d.String())
-		}
-	case fl.IsTime():
-		for _, d := range val.Times() {
-			st = append(st, d.Format(time.RFC3339))
-		}
+	err := val.Unmarshal(&st)
+	if err != nil {
+		return ""
 	}
 
-	return strings.Join(st, ",")
+	return fmt.Sprintf("%v", st)
 }
 
 //nolint:cyclop
-func txtDefault(val value.Value, fl flag.Flag) []byte {
+func txtDefault(val config.Value, vr config.Variable) []byte {
 	var buf bytes.Buffer
 
 	buf.WriteString("<comment> [default: ")
 
-	switch {
-	case fl.IsArray():
-		buf.WriteString(txtDefaultArray(val, fl))
-	case fl.IsInt():
-		buf.WriteString(strconv.Itoa(val.Int()))
-	case fl.IsInt64():
-		buf.WriteString(strconv.FormatInt(val.Int64(), 10))
-	case fl.IsUint():
-		buf.WriteString(strconv.FormatUint(uint64(val.Uint()), 10))
-	case fl.IsUint64():
-		buf.WriteString(strconv.FormatUint(val.Uint64(), 10))
-	case fl.IsFloat64():
-		buf.WriteString(strconv.FormatFloat(val.Float64(), 'g', -1, 64))
-	case fl.IsDuration():
-		buf.WriteString(val.Duration().String())
-	case fl.IsTime():
-		buf.WriteString(val.Time().Format(time.RFC3339))
-	case fl.IsAny():
-		buf.WriteString(fmt.Sprint(val.Any()))
-	default:
-		buf.WriteString(val.String())
+	dataType := param.Type(vr)
+	if option.IsSlice(vr) {
+		buf.WriteString(txtDefaultArray(val))
+	} else {
+		switch dataType.(type) {
+		case int:
+			buf.WriteString(strconv.Itoa(val.Int()))
+		case int64:
+			buf.WriteString(strconv.FormatInt(val.Int64(), 10))
+		case uint:
+			buf.WriteString(strconv.FormatUint(uint64(val.Uint()), 10))
+		case uint64:
+			buf.WriteString(strconv.FormatUint(val.Uint64(), 10))
+		case float64:
+			buf.WriteString(strconv.FormatFloat(val.Float64(), 'g', -1, 64))
+		case time.Duration:
+			buf.WriteString(val.Duration().String())
+		case time.Time:
+			buf.WriteString(val.Time().Format(time.RFC3339))
+		case string:
+			buf.WriteString(val.String())
+		default:
+			buf.WriteString(fmt.Sprint(val.Any()))
+		}
 	}
 
 	buf.WriteString("]</comment>")
@@ -151,7 +131,7 @@ func txtDefault(val value.Value, fl flag.Flag) []byte {
 }
 
 func txtCommands(cmds []NSCommand) string {
-	max := commandsTotalWidth(cmds)
+	width := commandsTotalWidth(cmds)
 	showNS := len(cmds) > 1
 
 	var buf bytes.Buffer
@@ -177,7 +157,7 @@ func txtCommands(cmds []NSCommand) string {
 			buf.WriteString("  <info>")
 			buf.WriteString(cmd.Name)
 			buf.WriteString("</info>")
-			buf.WriteString(strings.Repeat(" ", max-len(cmd.Name)+defaultSpace))
+			buf.WriteString(strings.Repeat(" ", width-len(cmd.Name)+defaultSpace))
 			buf.WriteString(cmd.Description)
 			buf.WriteString("\n")
 		}
@@ -201,15 +181,12 @@ func txtHelp(cmd Command) string {
 	return buf.String()
 }
 
-func txtDefinitionOption(maxLen int, def *input.Definition) string {
+func txtDefinitionOption(maxLen int, opts ...config.Variable) string {
 	buf := bytes.Buffer{}
-	opts := def.Options()
-
 	buf.WriteString("\n\n<comment>Options:</comment>\n")
 
-	for _, name := range opts {
-		opt, _ := def.Option(name)
-		if opt.IsHidden() {
+	for _, opt := range opts {
+		if option.IsHidden(opt) {
 			continue
 		}
 
@@ -217,26 +194,26 @@ func txtDefinitionOption(maxLen int, def *input.Definition) string {
 
 		op.WriteString("  <info>")
 
-		if opt.HasShort() {
+		if short, ok := option.ParamShort(opt); ok {
 			op.WriteString("-")
-			op.WriteString(opt.Alias)
+			op.WriteString(short)
 			op.WriteString(", ")
 		} else {
 			op.WriteString("    ")
 		}
 
 		op.WriteString("--")
-		op.WriteString(opt.Name)
+		op.WriteString(strings.Join(opt.Key(), dashDelimiter))
 
-		if !opt.IsBool() {
-			if !opt.IsRequired() {
+		if !option.IsBool(opt) {
+			if !option.IsRequired(opt) {
 				op.WriteString("[")
 			}
 
 			op.WriteString("=")
-			op.WriteString(strings.ToUpper(opt.Name))
+			op.WriteString(strings.ToUpper(strings.Join(opt.Key(), dashDelimiter)))
 
-			if !opt.IsRequired() {
+			if !option.IsRequired(opt) {
 				op.WriteString("]")
 			}
 		}
@@ -244,13 +221,13 @@ func txtDefinitionOption(maxLen int, def *input.Definition) string {
 		op.WriteString("</info>")
 		buf.Write(op.Bytes())
 		buf.WriteString(strings.Repeat(" ", maxLen+17-op.Len()))
-		buf.WriteString(opt.Description)
+		buf.WriteString(option.DataDescription(opt))
 
-		if opt.HasDefault() {
-			buf.Write(txtDefault(opt.Default, opt.Flag))
+		if data, ok := option.DataDefaut(opt); ok {
+			buf.Write(txtDefault(value.New(data), opt))
 		}
 
-		if opt.IsArray() {
+		if option.IsSlice(opt) {
 			buf.WriteString("<comment> (multiple values allowed)</comment>")
 		}
 
@@ -260,68 +237,67 @@ func txtDefinitionOption(maxLen int, def *input.Definition) string {
 	return buf.String()
 }
 
-func txtDefinition(def *input.Definition) string {
-	max := totalWidth(def)
+func txtDefinition(def Definition) string {
+	width := totalWidth(def)
 
 	var buf bytes.Buffer
 
 	if args := def.Arguments(); len(args) > 0 {
 		buf.WriteString("\n\n<comment>Arguments:</comment>\n")
 
-		for pos := range args {
+		for _, arg := range args {
 			var ab bytes.Buffer
 
-			arg, _ := def.Argument(pos)
-
 			ab.WriteString("  <info>")
-			ab.WriteString(arg.Name)
+			ab.WriteString(strings.Join(arg.Key(), dashDelimiter))
 			ab.WriteString("</info>")
-			ab.WriteString(strings.Repeat(" ", max+infoLen+defaultSpace-ab.Len()))
+			ab.WriteString(strings.Repeat(" ", width+infoLen+defaultSpace-ab.Len()))
 
 			buf.Write(ab.Bytes())
-			buf.WriteString(arg.Description)
+			buf.WriteString(option.DataDescription(arg))
 
-			if arg.HasDefault() {
-				buf.Write(txtDefault(arg.Default, arg.Flag))
+			if data, ok := option.DataDefaut(arg); ok {
+				buf.Write(txtDefault(value.New(data), arg))
 			}
 		}
 	}
 
 	if opts := def.Options(); len(opts) > 0 {
-		buf.WriteString(txtDefinitionOption(max, def))
+		buf.WriteString(txtDefinitionOption(width, opts...))
 	}
 
 	return buf.String()
 }
 
-func txtSynopsis(def *input.Definition) string {
+func txtSynopsis(def Definition) string {
 	var buf bytes.Buffer
 
 	if len(def.Options()) > 0 {
 		buf.WriteString("[options] ")
 	}
 
-	if buf.Len() > 0 && len(def.Arguments()) > 0 {
+	args := def.Arguments()
+
+	if buf.Len() > 0 && len(args) > 0 {
 		buf.WriteString("[--]")
 	}
 
 	var opt int
 
-	for pos := range def.Arguments() {
+	for _, arg := range args {
 		buf.WriteString(" ")
 
-		arg, _ := def.Argument(pos)
-
-		if !arg.IsRequired() {
+		if !option.IsRequired(arg) {
 			buf.WriteString("[")
+
 			opt++
 		}
 
 		buf.WriteString("<")
-		buf.WriteString(arg.Name)
+		buf.WriteString(strings.Join(arg.Key(), dashDelimiter))
 		buf.WriteString(">")
 
-		if arg.IsArray() {
+		if option.IsSlice(arg) {
 			buf.WriteString("...")
 		}
 	}
@@ -332,47 +308,44 @@ func txtSynopsis(def *input.Definition) string {
 }
 
 func commandsTotalWidth(cmds []NSCommand) int {
-	var max int
+	var width int
 
 	for _, ns := range cmds {
 		for _, cmd := range ns.Commands {
-			if len(cmd.Name) > max {
-				max = len(cmd.Name)
+			if len(cmd.Name) > width {
+				width = len(cmd.Name)
 			}
 		}
 	}
 
-	return max
+	return width
 }
 
-func totalWidth(def *input.Definition) int {
-	var max int
+//nolint:mnd
+func totalWidth(def Definition) int {
+	var width int
 
-	for pos := range def.Arguments() {
-		arg, _ := def.Argument(pos)
-		l := len(arg.Name)
-
-		if l > max {
-			max = l
+	for _, arg := range def.Arguments() {
+		if l := len(strings.Join(arg.Key(), dashDelimiter)); l > width {
+			width = l
 		}
 	}
 
-	for _, name := range def.Options() {
-		opt, _ := def.Option(name)
-		current := len(opt.Name) + 6
+	for _, opt := range def.Options() {
+		current := len(strings.Join(opt.Key(), dashDelimiter)) + 6
 
-		if !opt.IsBool() {
+		if !option.IsBool(opt) {
 			current = current*2 + 1
 		}
 
-		if opt.HasDefault() {
+		if _, ok := option.DataDefaut(opt); ok {
 			current += 2
 		}
 
-		if current > max {
-			max = current
+		if current > width {
+			width = current
 		}
 	}
 
-	return max
+	return width
 }

@@ -22,7 +22,8 @@ var (
 
 // MustRegister register command or panic if err.
 func MustRegister(cmd *Command) {
-	if err := Register(cmd); err != nil {
+	err := Register(cmd)
+	if err != nil {
 		panic(err)
 	}
 }

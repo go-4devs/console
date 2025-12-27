@@ -4,8 +4,11 @@ import (
 	"context"
 	"os"
 
-	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/value"
+	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/config/provider/arg"
+	"gitoa.ru/go-4devs/config/provider/chain"
+	"gitoa.ru/go-4devs/config/provider/memory"
+	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -17,7 +20,7 @@ func WithOutput(out output.Output) func(*App) {
 }
 
 // WithInput sets input, by default creates inpur by os.Args.
-func WithInput(in input.Input) func(*App) {
+func WithInput(in config.BindProvider) func(*App) {
 	return func(a *App) {
 		a.in = in
 	}
@@ -25,7 +28,7 @@ func WithInput(in input.Input) func(*App) {
 
 // WithSkipArgs sets how many arguments are passed. For example, you don't need to pass the name of a single command.
 func WithSkipArgs(l int) func(*App) {
-	return WithInput(input.NewArgs(l))
+	return WithInput(chain.New(arg.New(arg.WithSkip(l)), &memory.Default{}))
 }
 
 // WithExit sets exit callback by default os.Exit.
@@ -40,7 +43,7 @@ func New(opts ...func(*App)) *App {
 	app := &App{
 		out:  output.Stdout(),
 		exit: os.Exit,
-		in:   input.NewArgs(0),
+		in:   chain.New(arg.New(arg.WithSkip(0)), &memory.Default{}),
 	}
 
 	for _, opt := range opts {
@@ -54,7 +57,7 @@ func New(opts ...func(*App)) *App {
 type App struct {
 	cmds []*Command
 	out  output.Output
-	in   input.Input
+	in   config.BindProvider
 	exit func(int)
 }
 
@@ -75,7 +78,8 @@ func (a *App) Execute(ctx context.Context) {
 	if err != nil {
 		a.printError(ctx, err)
 
-		if err := a.list(ctx); err != nil {
+		err := a.list(ctx)
+		if err != nil {
 			a.printError(ctx, err)
 		}
 
@@ -86,7 +90,8 @@ func (a *App) Execute(ctx context.Context) {
 }
 
 func (a *App) exec(ctx context.Context, cmd *Command) {
-	if err := Run(ctx, cmd, a.in, a.out); err != nil {
+	err := Run(ctx, cmd, a.in, a.out)
+	if err != nil {
 		a.printError(ctx, err)
 		a.exit(1)
 	}
@@ -110,9 +115,9 @@ func (a *App) list(ctx context.Context) error {
 		return err
 	}
 
-	arr := &input.Array{}
-	arr.SetArgument(ArgumentCommandName, value.New(CommandList))
-	in := input.Chain(arr, a.in)
+	arr := &memory.Map{}
+	arr.SetOption(value.New(CommandList), ArgumentCommandName)
+	in := chain.New(arr, a.in)
 
 	return Run(ctx, cmd, in, a.out)
 }

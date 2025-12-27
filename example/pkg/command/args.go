@@ -6,6 +6,7 @@ import (
 
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
+	"gitoa.ru/go-4devs/console/input/key"
 	"gitoa.ru/go-4devs/console/input/option"
 	"gitoa.ru/go-4devs/console/output"
 )
@@ -26,11 +27,11 @@ func Args() *console.Command {
 			return nil
 		},
 		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
-			out.Println(ctx, "foo: <info>", in.Option(ctx, "foo").Bool(), "</info>")
-			out.Println(ctx, "bar: <info>", in.Option(ctx, "bar").String(), "</info>")
-			out.Println(ctx, "cat: <info>", in.Option(ctx, "cat").String(), "</info>")
-			out.Println(ctx, "time: <info>", in.Option(ctx, "time").Time().Format(time.RFC3339), "</info>")
-			out.Println(ctx, "hidden: <info>", in.Option(ctx, "hidden").Time().Format(time.RFC3339), "</info>")
+			out.Println(ctx, "foo: <info>", in.Value(ctx, key.Dash("foo")).Bool(), "</info>")
+			out.Println(ctx, "bar: <info>", in.Value(ctx, key.Dash("bar")).String(), "</info>")
+			out.Println(ctx, "cat: <info>", in.Value(ctx, key.Dash("cat")).String(), "</info>")
+			out.Println(ctx, "time: <info>", in.Value(ctx, key.Dash("time")).Time().Format(time.RFC3339), "</info>")
+			out.Println(ctx, "hidden: <info>", in.Value(ctx, key.Dash("hidden")).Time().Format(time.RFC3339), "</info>")
 
 			return nil
 		},

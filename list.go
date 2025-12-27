@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"gitoa.ru/go-4devs/console/input"
-	"gitoa.ru/go-4devs/console/input/argument"
-	"gitoa.ru/go-4devs/console/input/option"
-	"gitoa.ru/go-4devs/console/input/validator"
+	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/config/definition"
+	"gitoa.ru/go-4devs/config/definition/option"
+	"gitoa.ru/go-4devs/config/provider/arg"
+	"gitoa.ru/go-4devs/config/validator"
+	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/descriptor"
 )
@@ -37,18 +39,16 @@ You can also output the information in other formats by using the <comment>--for
   <info>{{ .Bin }} {{ .Name }} --format=xml</info>
 `,
 		Execute: executeList,
-		Configure: func(ctx context.Context, config *input.Definition) error {
+		Configure: func(_ context.Context, cfg config.Definition) error {
 			formats := descriptor.Descriptors()
-			config.
-				SetArguments(
-					argument.String(ArgumentNamespace, "The namespace name"),
-				).
-				SetOptions(
+			cfg.
+				Add(
+					arg.String(ArgumentNamespace, "The namespace name"),
 					option.String(OptionFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 						option.Required,
-						option.Default(formats[0]),
-						option.Valid(
-							validator.NotBlank(0),
+						option.Default(value.New(formats[0])),
+						validator.Valid(
+							validator.NotBlank,
 							validator.Enum(formats...),
 						),
 					),
@@ -60,19 +60,19 @@ You can also output the information in other formats by using the <comment>--for
 }
 
 //nolint:cyclop
-func executeList(ctx context.Context, in input.Input, out output.Output) error {
-	ns := in.Argument(ctx, ArgumentNamespace).String()
-	format := in.Option(ctx, OptionFormat).String()
+func executeList(ctx context.Context, in config.Provider, out output.Output) error {
+	ns := ReadValue(ctx, in, ArgumentNamespace).String()
+	format := ReadValue(ctx, in, OptionFormat).String()
 
 	des, err := descriptor.Find(format)
 	if err != nil {
-		return fmt.Errorf("find descriptor: %w", err)
+		return fmt.Errorf("find descriptor[%v]: %w", format, err)
 	}
 
 	cmds := Commands()
 	commands := descriptor.Commands{
 		Namespace:  ns,
-		Definition: Default(input.NewDefinition()),
+		Definition: descriptor.NewDefinition(config.NewVars(definition.New(Default()...).Options()...).Variables()),
 	}
 	groups := make(map[string]*descriptor.NSCommand)
 	namespaces := make([]string, 0, len(cmds))
@@ -88,7 +88,7 @@ func executeList(ctx context.Context, in input.Input, out output.Output) error {
 			continue
 		}
 
-		gn := strings.SplitN(name, ":", 2)
+		gn := strings.SplitN(name, ":", defaultLenNamespace)
 		if len(gn) != defaultLenNamespace {
 			empty.Append(cmd.Name, cmd.Description)
 

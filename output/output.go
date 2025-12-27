@@ -18,7 +18,7 @@ func writeError(_ int, err error) {
 
 type Output func(ctx context.Context, verb verbosity.Verbosity, msg string, args ...label.KeyValue) (int, error)
 
-func (o Output) Print(ctx context.Context, args ...interface{}) {
+func (o Output) Print(ctx context.Context, args ...any) {
 	writeError(o(ctx, verbosity.Norm, fmt.Sprint(args...)))
 }
 
@@ -26,15 +26,15 @@ func (o Output) PrintKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Norm, msg, kv...))
 }
 
-func (o Output) Printf(ctx context.Context, format string, args ...interface{}) {
+func (o Output) Printf(ctx context.Context, format string, args ...any) {
 	writeError(o(ctx, verbosity.Norm, fmt.Sprintf(format, args...)))
 }
 
-func (o Output) Println(ctx context.Context, args ...interface{}) {
+func (o Output) Println(ctx context.Context, args ...any) {
 	writeError(o(ctx, verbosity.Norm, fmt.Sprintln(args...)))
 }
 
-func (o Output) Info(ctx context.Context, args ...interface{}) {
+func (o Output) Info(ctx context.Context, args ...any) {
 	writeError(o(ctx, verbosity.Info, fmt.Sprint(args...)))
 }
 
@@ -42,7 +42,7 @@ func (o Output) InfoKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Info, msg, kv...))
 }
 
-func (o Output) Debug(ctx context.Context, args ...interface{}) {
+func (o Output) Debug(ctx context.Context, args ...any) {
 	writeError(o(ctx, verbosity.Debug, fmt.Sprint(args...)))
 }
 
@@ -50,7 +50,7 @@ func (o Output) DebugKV(ctx context.Context, msg string, kv ...label.KeyValue) {
 	writeError(o(ctx, verbosity.Debug, msg, kv...))
 }
 
-func (o Output) Trace(ctx context.Context, args ...interface{}) {
+func (o Output) Trace(ctx context.Context, args ...any) {
 	writeError(o(ctx, verbosity.Trace, fmt.Sprint(args...)))
 }
 

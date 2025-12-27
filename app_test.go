@@ -30,18 +30,21 @@ func ExampleNew_help() {
 	//   test:command [options] [--] [<test_argument>]
 	//
 	// Arguments:
-	//   test_argument                  test argument
+	//   test_argument                                        test argument
 	//
 	// Options:
-	//       --duration[=DURATION]        test duration with default [default: 1s]
-	//       --bool                       test bool option
-	//       --string[=STRING]            array string (multiple values allowed)
-	//   -q, --quiet                      Do not output any message
-	//   -v, --verbose                    Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace (multiple values allowed)
-	//   -h, --help                       Display this help message
-	//   -V, --version                    Display this application version
-	//       --ansi                       Do not ask any interactive question
-	//       --no-ansi                    Disable ANSI output
+	//       --string[=STRING]                                  array string (multiple values allowed)
+	//       --group-bool                                       bool
+	//       --group-test-string[=GROUP-TEST-STRING]            test group string [default: group string default value]
+	//       --log-{service}-level[=LOG-{SERVICE}-LEVEL]        service level [default: debug]
+	//       --bool                                             test bool option
+	//       --duration[=DURATION]                              test duration with default [default: 1s]
+	//       --ansi                                             Do not ask any interactive question
+	//   -V, --version                                          Display this application version
+	//   -h, --help                                             Display this help message
+	//   -v, --verbose                                          Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace (multiple values allowed)
+	//   -q, --quiet                                            Do not output any message
+	//       --no-ansi                                          Disable ANSI output
 }
 
 func ExampleNew_list() {
@@ -74,12 +77,12 @@ func ExampleNew_list() {
 	//   command [options] [arguments]
 	//
 	// Options:
-	//   -q, --quiet    Do not output any message
-	//   -v, --verbose  Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace (multiple values allowed)
-	//   -h, --help     Display this help message
-	//   -V, --version  Display this application version
-	//       --ansi     Do not ask any interactive question
 	//       --no-ansi  Disable ANSI output
+	//       --ansi     Do not ask any interactive question
+	//   -V, --version  Display this application version
+	//   -h, --help     Display this help message
+	//   -v, --verbose  Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace (multiple values allowed)
+	//   -q, --quiet    Do not output any message
 	//
 	// Available commands:
 	//   help                 Displays help for a command

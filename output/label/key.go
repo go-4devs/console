@@ -2,7 +2,7 @@ package label
 
 type Key string
 
-func (k Key) Any(v interface{}) KeyValue {
+func (k Key) Any(v any) KeyValue {
 	return KeyValue{
 		Key:   k,
 		Value: AnyValue(v),

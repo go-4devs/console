@@ -1,6 +1,8 @@
 module gitoa.ru/go-4devs/console/example
 
-go 1.19
+go 1.22
+
+toolchain go1.24.1
 
 replace gitoa.ru/go-4devs/console => ../
 

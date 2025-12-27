@@ -6,7 +6,8 @@ import (
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/input"
 	"gitoa.ru/go-4devs/console/input/argument"
-	"gitoa.ru/go-4devs/console/input/variable"
+	"gitoa.ru/go-4devs/console/input/key"
+	"gitoa.ru/go-4devs/console/input/param"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -16,20 +17,22 @@ func CreateUser(required bool) *console.Command {
 		Description: "Creates a new user.",
 		Help:        "This command allows you to create a user...",
 		Configure: func(ctx context.Context, cfg *input.Definition) error {
-			var opts []variable.Option
+			var opts []param.Option
 			if required {
 				opts = append(opts, argument.Required)
 			}
 			cfg.
-				SetArgument("username", "The username of the user.", argument.Required).
-				SetArgument("password", "User password", opts...)
+				SetOptions(
+					argument.String("username", "The username of the user.", argument.Required),
+					argument.String("password", "User password", opts...),
+				)
 
 			return nil
 		},
 		Execute: func(ctx context.Context, in input.Input, out output.Output) error {
 			// outputs a message followed by a "\n"
 			out.Println(ctx, "User Creator")
-			out.Println(ctx, "Username: ", in.Argument(ctx, "username").String())
+			out.Println(ctx, "Username: ", in.Value(ctx, key.Dash("username")).String())
 
 			return nil
 		},
