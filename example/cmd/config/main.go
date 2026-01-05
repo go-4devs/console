@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 
 	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/config/provider/chain"
@@ -22,7 +23,7 @@ func main() {
 	console.
 		New(console.WithInput(
 			chain.New(
-				arg.New(arg.WithSkip(0)),
+				arg.New(arg.WithArgs(os.Args)),
 				env.New(Namespace, AppName),
 				&memory.Default{},
 			),
