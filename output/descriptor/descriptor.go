@@ -3,13 +3,9 @@ package descriptor
 import (
 	"context"
 	"errors"
-	"sort"
-	"strings"
 	"sync"
 
 	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -24,17 +20,19 @@ var (
 )
 
 type Command struct {
+	config.Options
+
 	Bin         string
 	Name        string
 	Description string
 	Help        string
-	Definition  Definition
 }
 
 type Commands struct {
-	Namespace  string
-	Definition Definition
-	Commands   []NSCommand
+	config.Options
+
+	Namespace string
+	Commands  []NSCommand
 }
 
 type NSCommand struct {
@@ -44,65 +42,6 @@ type NSCommand struct {
 
 func (n *NSCommand) Append(name, desc string) {
 	n.Commands = append(n.Commands, ShortCommand{Name: name, Description: desc})
-}
-
-func NewDefinition(opts []config.Variable) Definition {
-	type data struct {
-		name string
-		pos  uint64
-		opt  config.Variable
-	}
-
-	posArgs := make([]data, 0, len(opts))
-
-	posOpt := make([]data, 0, len(opts))
-	for _, opt := range opts {
-		pos, ok := arg.ParamArgument(opt)
-		if !ok {
-			pos, _ = option.DataPosition(opt)
-			posOpt = append(posOpt, data{pos: pos, opt: opt})
-
-			continue
-		}
-
-		posArgs = append(posArgs, data{name: strings.Join(opt.Key(), "."), pos: pos, opt: opt})
-	}
-
-	sort.Slice(posArgs, func(i, j int) bool {
-		return posArgs[i].pos > posArgs[j].pos && posArgs[i].name > posArgs[j].name
-	})
-
-	sort.Slice(posOpt, func(i, j int) bool {
-		return posOpt[i].pos < posOpt[j].pos
-	})
-
-	args := make([]config.Variable, len(posArgs))
-	for idx := range posArgs {
-		args[idx] = posArgs[idx].opt
-	}
-
-	options := make([]config.Variable, len(posOpt))
-	for idx := range posOpt {
-		options[idx] = posOpt[idx].opt
-	}
-
-	return Definition{
-		options: options,
-		args:    args,
-	}
-}
-
-type Definition struct {
-	args    []config.Variable
-	options []config.Variable
-}
-
-func (d Definition) Arguments() []config.Variable {
-	return d.args
-}
-
-func (d Definition) Options() []config.Variable {
-	return d.options
 }
 
 type ShortCommand struct {

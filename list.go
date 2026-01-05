@@ -8,6 +8,7 @@ import (
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/config/definition"
 	"gitoa.ru/go-4devs/config/definition/option"
+	"gitoa.ru/go-4devs/config/param"
 	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/config/validator"
 	"gitoa.ru/go-4devs/config/value"
@@ -71,8 +72,8 @@ func executeList(ctx context.Context, in config.Provider, out output.Output) err
 
 	cmds := Commands()
 	commands := descriptor.Commands{
-		Namespace:  ns,
-		Definition: descriptor.NewDefinition(config.NewVars(definition.New(Default()...).Options()...).Variables()),
+		Namespace: ns,
+		Options:   definition.New(Default()...).With(param.New(descriptor.TxtStyle())),
 	}
 	groups := make(map[string]*descriptor.NSCommand)
 	namespaces := make([]string, 0, len(cmds))
