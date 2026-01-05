@@ -133,12 +133,10 @@ func txtHelp(cmd Command) string {
 		return ""
 	}
 
-	tpl := template.Must(template.New("help").Parse(cmd.Help))
-
 	var buf bytes.Buffer
 
 	buf.WriteString("\n<comment>Help:</comment>")
-	_ = tpl.Execute(&buf, cmd)
+	buf.WriteString(cmd.Help)
 
 	return buf.String()
 }
