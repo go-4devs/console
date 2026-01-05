@@ -9,6 +9,7 @@ import (
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/config/definition"
 	"gitoa.ru/go-4devs/config/definition/option"
+	"gitoa.ru/go-4devs/config/param"
 	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/config/validator"
 	"gitoa.ru/go-4devs/config/value"
@@ -70,7 +71,7 @@ To display the list of available commands, please use the <info>list</info> comm
 				Name:        cmd.Name,
 				Description: cmd.Description,
 				Help:        cmd.Help,
-				Definition:  descriptor.NewDefinition(config.NewVars(def.Options()...).Variables()),
+				Options:     def.With(param.New(descriptor.TxtStyle())),
 			})
 			if derr != nil {
 				return fmt.Errorf("descriptor help:%w", derr)
