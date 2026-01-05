@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"gitoa.ru/go-4devs/config"
+	"gitoa.ru/go-4devs/console/command"
+	"gitoa.ru/go-4devs/console/errors"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -52,6 +54,18 @@ func WithName(name string) Option {
 	}
 }
 
+func Wrap(cmd *Command) command.Command {
+	opts := make([]command.Option, 0)
+	if cmd.Hidden {
+		opts = append(opts, command.Hidden)
+	}
+
+	opts = append(opts, command.Configure(cmd.Init))
+
+	return command.New(cmd.Name, cmd.Description, cmd.Run, opts...)
+}
+
+// Deprecated: use command.New().
 type Command struct {
 	// The name of the command.
 	Name string
@@ -101,7 +115,7 @@ func (c *Command) With(opts ...Option) *Command {
 // Run run command with input and output.
 func (c *Command) Run(ctx context.Context, in config.Provider, out output.Output) error {
 	if c.Execute == nil {
-		return fmt.Errorf("%w", ErrExecuteNil)
+		return fmt.Errorf("%w", errors.ErrExecuteNil)
 	}
 
 	if c.Handle != nil {

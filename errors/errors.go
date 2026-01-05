@@ -1,4 +1,4 @@
-package console
+package errors //nolint:revive
 
 import (
 	"errors"
@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	ErrNotFound         = errors.New("command not found")
-	ErrCommandNil       = errors.New("console: Register command is nil")
-	ErrExecuteNil       = errors.New("console: execute is nil")
-	ErrCommandDuplicate = errors.New("console: duplicate command")
+	ErrWrongType       = errors.New("wrong type")
+	ErrNotFound        = errors.New("not found")
+	ErrCommandNil      = errors.New("command is nil")
+	ErrExecuteNil      = errors.New("execute is nil")
+	ErrCommandDplicate = errors.New("duplicate command")
 )
 
 type AlternativesError struct {

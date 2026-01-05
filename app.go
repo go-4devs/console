@@ -2,6 +2,7 @@ package console
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"gitoa.ru/go-4devs/config"
@@ -9,6 +10,10 @@ import (
 	"gitoa.ru/go-4devs/config/provider/chain"
 	"gitoa.ru/go-4devs/config/provider/memory"
 	"gitoa.ru/go-4devs/config/value"
+	"gitoa.ru/go-4devs/console/command"
+	"gitoa.ru/go-4devs/console/command/help"
+	"gitoa.ru/go-4devs/console/command/list"
+	"gitoa.ru/go-4devs/console/internal/registry"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -38,12 +43,20 @@ func WithExit(f func(int)) func(*App) {
 	}
 }
 
+func WithReplaceCommand(a *App) {
+	a.registry = registry.Set
+}
+
 // New creates and configure new console app.
 func New(opts ...func(*App)) *App {
 	app := &App{
 		out:  output.Stdout(),
 		exit: os.Exit,
-		in:   chain.New(arg.New(arg.WithArgs(os.Args[resolveSkip(0):])), &memory.Default{}),
+		in: chain.New(
+			arg.New(arg.WithArgs(os.Args[resolveSkip(0):])),
+			&memory.Default{},
+		),
+		registry: registry.Add,
 	}
 
 	for _, opt := range opts {
@@ -55,26 +68,25 @@ func New(opts ...func(*App)) *App {
 
 // App is collection of command and configure env.
 type App struct {
-	cmds []*Command
-	out  output.Output
-	in   config.BindProvider
-	exit func(int)
+	registry func(...command.Command) error
+	out      output.Output
+	in       config.BindProvider
+	exit     func(int)
 }
 
 // Add add or replace command.
-func (a *App) Add(cmds ...*Command) *App {
-	a.cmds = append(a.cmds, cmds...)
+func (a *App) Add(cmds ...command.Command) *App {
+	if err := a.registry(cmds...); err != nil {
+		a.printError(context.Background(), err)
+		a.exit(1)
+	}
 
 	return a
 }
 
 // Execute run the command by name and arguments.
 func (a *App) Execute(ctx context.Context) {
-	for _, cmd := range a.cmds {
-		register(cmd)
-	}
-
-	cmd, err := a.find(ctx)
+	cmd, err := registry.Find(a.commandName())
 	if err != nil {
 		a.printError(ctx, err)
 
@@ -89,7 +101,7 @@ func (a *App) Execute(ctx context.Context) {
 	a.exec(ctx, cmd)
 }
 
-func (a *App) exec(ctx context.Context, cmd *Command) {
+func (a *App) exec(ctx context.Context, cmd command.Command) {
 	err := Run(ctx, cmd, a.in, a.out)
 	if err != nil {
 		a.printError(ctx, err)
@@ -99,31 +111,30 @@ func (a *App) exec(ctx context.Context, cmd *Command) {
 	a.exit(0)
 }
 
-func (a *App) find(_ context.Context) (*Command, error) {
-	if len(os.Args) < 2 || os.Args[1][1] == '-' {
-		return Find(CommandList)
+func (a *App) commandName() string {
+	name := list.Name
+	if len(os.Args) > 1 && len(os.Args[1]) > 1 && os.Args[1][1] != '-' {
+		name = os.Args[1]
 	}
 
-	name := os.Args[1]
-
-	return Find(name)
+	return name
 }
 
 func (a *App) list(ctx context.Context) error {
-	cmd, err := Find(CommandHelp)
+	cmd, err := registry.Find(help.Name)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w", err)
 	}
 
 	arr := &memory.Map{}
-	arr.SetOption(value.New(CommandList), ArgumentCommandName)
+	arr.SetOption(value.New(list.Name), help.ArgumentCommandName)
 	in := chain.New(arr, a.in)
 
 	return Run(ctx, cmd, in, a.out)
 }
 
 func (a *App) printError(ctx context.Context, err error) {
-	ansi(ctx, a.in, a.out).Println(ctx, "<error>\n\n  ", err, "\n</error>")
+	command.Ansi(ctx, a.in, a.out).Println(ctx, "<error>\n\n  ", err, "\n</error>")
 }
 
 func resolveSkip(in int) int {

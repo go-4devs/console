@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"gitoa.ru/go-4devs/console"
+	"gitoa.ru/go-4devs/console/command"
 )
 
 //nolint:lll
@@ -55,21 +56,15 @@ func ExampleNew_list() {
 		"--no-ansi",
 	}
 
-	console.New(console.WithExit(func(int) {})).
+	console.New(
+		console.WithExit(func(int) {}),
+		console.WithReplaceCommand,
+	).
 		Add(
 			Command(),
-			&console.Command{
-				Name:        "fdevs:console:arg",
-				Description: "Understanding how Console Arguments and Options Are Handled",
-			},
-			&console.Command{
-				Name:        "fdevs:console:hello",
-				Description: "example hello command",
-			},
-			&console.Command{
-				Name:        "app:start",
-				Description: "example command in other namespace",
-			},
+			command.New("fdevs:console:arg", "Understanding how Console Arguments and Options Are Handled", Execute),
+			command.New("fdevs:console:hello", "example hello command", Execute),
+			command.New("app:start", "example command in other namespace", Execute),
 		).
 		Execute(ctx)
 	// Output:
