@@ -5,12 +5,12 @@ import (
 
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/config/definition/option"
-	cparam "gitoa.ru/go-4devs/config/param"
+	"gitoa.ru/go-4devs/config/param"
 	argument "gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/command"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 func CreateUser(required bool) command.Command {
@@ -19,7 +19,7 @@ func CreateUser(required bool) command.Command {
 		"Creates a new user.",
 		UserExecute,
 		command.Configure(UserConfigure(required)),
-		command.Help(func(param.HData) (string, error) {
+		command.Help(func(setting.HData) (string, error) {
 			return "This command allows you to create a user...", nil
 		}),
 	)
@@ -27,7 +27,7 @@ func CreateUser(required bool) command.Command {
 
 func UserConfigure(required bool) func(_ context.Context, cfg config.Definition) error {
 	return func(_ context.Context, cfg config.Definition) error {
-		var opts []cparam.Option
+		var opts []param.Option
 		if required {
 			opts = append(opts, option.Required)
 		}

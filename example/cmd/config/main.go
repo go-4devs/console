@@ -9,6 +9,7 @@ import (
 	"gitoa.ru/go-4devs/config/provider/env"
 	"gitoa.ru/go-4devs/config/provider/memory"
 	"gitoa.ru/go-4devs/console"
+	"gitoa.ru/go-4devs/console/command/dump"
 	"gitoa.ru/go-4devs/console/example/pkg/command"
 )
 
@@ -23,12 +24,13 @@ func main() {
 	console.
 		New(console.WithInput(
 			chain.New(
-				arg.New(arg.WithArgs(os.Args)),
+				arg.New(arg.WithArgs(os.Args[console.ResolveSkip(0):])),
 				env.New(Namespace, AppName),
 				&memory.Default{},
 			),
 		)).
 		Add(
+			dump.Command(),
 			command.Long(),
 			command.Args(),
 		).

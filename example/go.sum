@@ -1,6 +1,4 @@
-gitoa.ru/go-4devs/config v0.0.8 h1:o4p8I9jWJMfiFVVKr50IqCGj1fF+8kmSPDkH0deRvn4=
-gitoa.ru/go-4devs/config v0.0.8/go.mod h1:jHKqVafFVW400LC0M4i1ifPapiI9sqpX/QTh+VMadKw=
-gitoa.ru/go-4devs/console v0.2.0 h1:6lsbArs99GA8vGdnwNDThZNKjFNctNtTlSCUjhgwIpU=
-gitoa.ru/go-4devs/console v0.2.0/go.mod h1:xi4Svw7T+lylckAQiJQS/2qwDwF4YbIanlhcbQrBAiI=
-gitoa.ru/go-4devs/console v0.2.1-0.20260105202444-e2c6fc0a35a4 h1:zOk/59IvgUfCDL6ub6WX4hsqDK79FsZR0gf7s7t3fXM=
-gitoa.ru/go-4devs/console v0.2.1-0.20260105202444-e2c6fc0a35a4/go.mod h1:PG/Zyj1dLh7eFlj9bgnV58+Ys6I/MTrS0q9W7oD7z4U=
+gitoa.ru/go-4devs/config v0.0.10 h1:NSagD0voj77/IGqRGsbR0DZmDvFcxbx+oRoWQnLnSy4=
+gitoa.ru/go-4devs/config v0.0.10/go.mod h1:cLW1+4E4uM4Pw+z4RuKEKbO1Lz6UTs2b2fTPyeEgTx8=
+gitoa.ru/go-4devs/console v0.4.0 h1:3N4VMWsHsaP32nWHxALxjPhp/MhYx1hXZdDl3xGJQ3k=
+gitoa.ru/go-4devs/console v0.4.0/go.mod h1:+J69iA4KQfC2H1FxItwL4pLkb3oW8g466qUSo0jWYjo=
