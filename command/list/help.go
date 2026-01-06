@@ -3,7 +3,7 @@ package list
 import (
 	"fmt"
 
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 const tpl = `
@@ -15,6 +15,6 @@ You can also output the information in other formats by using the <comment>--for
   <info>%[1]s %[2]s --format=xml</info>
 `
 
-func Help(data param.HData) (string, error) {
+func Help(data setting.HData) (string, error) {
 	return fmt.Sprintf(tpl, data.Bin, data.Name), nil
 }

@@ -2,6 +2,7 @@ package help
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -9,15 +10,16 @@ import (
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/config/definition"
 	"gitoa.ru/go-4devs/config/definition/option"
-	cparam "gitoa.ru/go-4devs/config/param"
+	"gitoa.ru/go-4devs/config/param"
 	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/config/validator"
 	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/command"
+	"gitoa.ru/go-4devs/console/errs"
 	"gitoa.ru/go-4devs/console/internal/registry"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/descriptor"
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 //nolint:gochecknoinits
@@ -91,17 +93,31 @@ func Execute(ctx context.Context, in config.Provider, out output.Output) error {
 		bin = os.Args[0]
 	}
 
-	help, err := param.Help(cmd, param.HelpData(bin, cmd.Name()))
+	help, err := setting.Help(cmd, setting.HelpData(bin, cmd.Name()))
 	if err != nil {
 		return fmt.Errorf("create help:%w", err)
+	}
+
+	hasUsage := true
+
+	usage, err := setting.Usage(cmd, setting.UsageData(cmd.Name(), def))
+	if err != nil {
+		if !errors.Is(err, errs.ErrNotFound) {
+			return fmt.Errorf("create usage:%w", err)
+		}
+
+		hasUsage = false
 	}
 
 	derr := des.Command(ctx, out, descriptor.Command{
 		Bin:         bin,
 		Name:        cmd.Name(),
-		Description: param.Description(cmd),
+		Description: setting.Description(cmd),
 		Help:        help,
-		Options:     def.With(cparam.New(descriptor.TxtStyle())),
+		Usage: func() (string, bool) {
+			return usage, hasUsage
+		},
+		Options: def.With(param.New(descriptor.TxtStyle())),
 	})
 	if derr != nil {
 		return fmt.Errorf("descriptor help:%w", derr)
@@ -118,7 +134,7 @@ You can also output the help in other formats by using the <comment>--format</co
 To display the list of available commands, please use the <info>list</info> command.
 `
 
-func Help(data param.HData) (string, error) {
+func Help(data setting.HData) (string, error) {
 	return fmt.Sprintf(tpl, data.Bin, data.Name), nil
 }
 

@@ -3,11 +3,10 @@ package command
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 type (
@@ -27,17 +26,17 @@ func Configure(fn ConfigureFn) Option {
 
 func Version(in string) Option {
 	return func(c *Command) {
-		c.Params = param.WithVersion(in)(c.Params)
+		c.Setting = setting.WithVersion(in)(c.Setting)
 	}
 }
 
 func Hidden(c *Command) {
-	c.Params = param.Hidden(c.Params)
+	c.Setting = setting.Hidden(c.Setting)
 }
 
-func Help(fn param.HelpFn) Option {
+func Help(fn setting.HelpFn) Option {
 	return func(c *Command) {
-		c.Params = param.WithHelp(fn)(c.Params)
+		c.Setting = setting.WithHelp(fn)(c.Setting)
 	}
 }
 
@@ -61,6 +60,18 @@ func Prepare(fn PrepareFn) Option {
 	}
 }
 
+func Usage(fn setting.UsageFn) Option {
+	return func(c *Command) {
+		c.Setting = setting.WithUsage(fn)(c.Setting)
+	}
+}
+
+func EmptyUsage(cmd *Command) {
+	cmd.Setting = setting.WithUsage(func(setting.UData) (string, error) {
+		return "", nil
+	})(cmd.Setting)
+}
+
 func New(name, desc string, execute ExecuteFn, opts ...Option) Command {
 	cmd := Command{
 		name:      name,
@@ -68,7 +79,7 @@ func New(name, desc string, execute ExecuteFn, opts ...Option) Command {
 		configure: emptyConfigure,
 		handle:    emptyHandle,
 		prepare:   emptyPrepare,
-		Params:    param.New(param.WithDescription(desc)),
+		Setting:   setting.New(setting.WithDescription(desc)),
 	}
 
 	for _, opt := range opts {
@@ -79,7 +90,7 @@ func New(name, desc string, execute ExecuteFn, opts ...Option) Command {
 }
 
 type Command struct {
-	param.Params
+	setting.Setting
 
 	name      string
 	execute   ExecuteFn
@@ -109,13 +120,12 @@ func (c Command) IsZero() bool {
 }
 
 func (c Command) String() string {
-	return fmt.Sprintf("command:%v, version:%v", c.Name(), param.Version(c))
+	return fmt.Sprintf("command:%v, version:%v", c.Name(), setting.Version(c))
 }
 
 func With(parent Command, opts ...Option) Command {
-	log.Print(parent.Name())
 	cmd := Command{
-		Params:    parent.Params,
+		Setting:   parent.Setting,
 		name:      parent.Name(),
 		execute:   parent.Execute,
 		configure: parent.Configure,

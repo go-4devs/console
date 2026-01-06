@@ -8,16 +8,16 @@ import (
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/config/definition"
 	"gitoa.ru/go-4devs/config/definition/option"
-	cparam "gitoa.ru/go-4devs/config/param"
+	"gitoa.ru/go-4devs/config/param"
 	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/config/validator"
 	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/command"
-	cerr "gitoa.ru/go-4devs/console/errors"
+	"gitoa.ru/go-4devs/console/errs"
 	"gitoa.ru/go-4devs/console/internal/registry"
 	"gitoa.ru/go-4devs/console/output"
 	"gitoa.ru/go-4devs/console/output/descriptor"
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 //nolint:gochecknoinits
@@ -80,7 +80,7 @@ func Execite(ctx context.Context, in config.Provider, out output.Output) error {
 	cmds := registry.Commands()
 	commands := descriptor.Commands{
 		Namespace: ns,
-		Options:   def.With(cparam.New(descriptor.TxtStyle())),
+		Options:   def.With(param.New(descriptor.TxtStyle())),
 	}
 	groups := make(map[string]*descriptor.NSCommand)
 	namespaces := make([]string, 0, len(cmds))
@@ -92,13 +92,13 @@ func Execite(ctx context.Context, in config.Provider, out output.Output) error {
 		}
 
 		cmd, _ := registry.Find(name)
-		if param.IsHidden(cmd) {
+		if setting.IsHidden(cmd) {
 			continue
 		}
 
 		gn := strings.SplitN(name, ":", defaultLenNamespace)
 		if len(gn) != defaultLenNamespace {
-			empty.Append(cmd.Name(), param.Description(cmd))
+			empty.Append(cmd.Name(), setting.Description(cmd))
 
 			continue
 		}
@@ -111,7 +111,7 @@ func Execite(ctx context.Context, in config.Provider, out output.Output) error {
 			namespaces = append(namespaces, gn[0])
 		}
 
-		groups[gn[0]].Append(name, param.Description(cmd))
+		groups[gn[0]].Append(name, setting.Description(cmd))
 	}
 
 	if len(empty.Commands) > 0 {
@@ -123,7 +123,7 @@ func Execite(ctx context.Context, in config.Provider, out output.Output) error {
 	}
 
 	if ns != "" && len(commands.Commands) == 0 {
-		return fmt.Errorf("%w: namespace %s", cerr.ErrNotFound, ns)
+		return fmt.Errorf("%w: namespace %s", errs.ErrNotFound, ns)
 	}
 
 	if err := des.Commands(ctx, out, commands); err != nil {

@@ -1,6 +1,6 @@
-package param
+package setting
 
-func Bool(in Params, key any) (bool, bool) {
+func Bool(in Setting, key any) (bool, bool) {
 	data, ok := in.Param(key)
 	if !ok {
 		return false, false
@@ -11,7 +11,7 @@ func Bool(in Params, key any) (bool, bool) {
 	return res, ok
 }
 
-func String(in Params, key any) (string, bool) {
+func String(in Setting, key any) (string, bool) {
 	data, ok := in.Param(key)
 	if !ok {
 		return "", false

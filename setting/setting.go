@@ -1,10 +1,10 @@
-package param
+package setting
 
 //nolint:gochecknoglobals
 var eparam = empty{}
 
-func New(opts ...Option) Params {
-	var param Params
+func New(opts ...Option) Setting {
+	var param Setting
 
 	param = eparam
 	for _, opt := range opts {
@@ -14,12 +14,12 @@ func New(opts ...Option) Params {
 	return param
 }
 
-type Params interface {
+type Setting interface {
 	Param(key any) (any, bool)
-	With(key, val any) Params
+	With(key, val any) Setting
 }
 
-type Option func(Params) Params
+type Option func(Setting) Setting
 
 type empty struct{}
 
@@ -27,7 +27,7 @@ func (e empty) Param(any) (any, bool) {
 	return nil, false
 }
 
-func (e empty) With(key, val any) Params {
+func (e empty) With(key, val any) Setting {
 	return data{
 		parent: e,
 		key:    key,
@@ -36,7 +36,7 @@ func (e empty) With(key, val any) Params {
 }
 
 type data struct {
-	parent   Params
+	parent   Setting
 	key, val any
 }
 
@@ -48,7 +48,7 @@ func (d data) Param(key any) (any, bool) {
 	return d.parent.Param(key)
 }
 
-func (d data) With(key, val any) Params {
+func (d data) With(key, val any) Setting {
 	return data{
 		parent: d,
 		key:    key,

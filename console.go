@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/config/definition"
@@ -13,16 +12,16 @@ import (
 	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console/command"
 	"gitoa.ru/go-4devs/console/command/help"
-	cerr "gitoa.ru/go-4devs/console/errors"
+	"gitoa.ru/go-4devs/console/errs"
 	"gitoa.ru/go-4devs/console/internal/registry"
 	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 // Execute the current command with option.
 func Execute(ctx context.Context, cmd command.Command, opts ...func(*App)) {
 	opts = append([]func(*App){WithSkipArgs(1)}, opts...)
-	New(opts...).exec(ctx, cmd)
+	New(opts...).exec(ctx, command.With(cmd, command.EmptyUsage))
 }
 
 // Run current command by input and output.
@@ -38,7 +37,7 @@ func Run(ctx context.Context, cmd command.Command, in config.BindProvider, out o
 
 	berr := in.Bind(ctx, config.NewVars(def.Options()...))
 	if berr != nil {
-		log.Print(berr)
+		printErr(ctx, in, out, berr)
 
 		return showHelp(ctx, cmd, in, output.Ansi(out))
 	}
@@ -46,7 +45,7 @@ func Run(ctx context.Context, cmd command.Command, in config.BindProvider, out o
 	out = command.Verbose(ctx, in, out)
 
 	if command.IsShowVersion(ctx, in) {
-		out.Println(ctx, "command <comment>", cmd.Name(), "</comment> version: <info>", param.Version(cmd), "</info>")
+		out.Println(ctx, "command <comment>", cmd.Name(), "</comment> version: <info>", setting.Version(cmd), "</info>")
 
 		return nil
 	}
@@ -67,7 +66,7 @@ func showHelp(ctx context.Context, cmd command.Command, in config.Provider, out 
 	arr.SetOption(value.New(cmd.Name()), help.ArgumentCommandName)
 	arr.SetOption(value.New(false), command.OptionHelp)
 
-	if _, err := registry.Find(cmd.Name()); errors.Is(err, cerr.ErrNotFound) {
+	if _, err := registry.Find(cmd.Name()); errors.Is(err, errs.ErrNotFound) {
 		_ = registry.Add(cmd)
 	}
 

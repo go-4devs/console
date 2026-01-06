@@ -17,7 +17,7 @@ import (
 	"gitoa.ru/go-4devs/config/value"
 	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/command"
-	cerr "gitoa.ru/go-4devs/console/errors"
+	"gitoa.ru/go-4devs/console/errs"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -82,7 +82,7 @@ func TestRunEmptyExecute(t *testing.T) {
 	out := output.Stdout()
 
 	err := empty.Run(ctx, in, out)
-	if !errors.Is(err, cerr.ErrExecuteNil) {
-		t.Fatalf("expected: %v, got: %v ", cerr.ErrExecuteNil, err)
+	if !errors.Is(err, errs.ErrExecuteNil) {
+		t.Fatalf("expected: %v, got: %v ", errs.ErrExecuteNil, err)
 	}
 }

@@ -6,7 +6,7 @@ import (
 
 	"gitoa.ru/go-4devs/config"
 	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/errors"
+	"gitoa.ru/go-4devs/console/errs"
 	"gitoa.ru/go-4devs/console/output"
 )
 
@@ -115,7 +115,7 @@ func (c *Command) With(opts ...Option) *Command {
 // Run run command with input and output.
 func (c *Command) Run(ctx context.Context, in config.Provider, out output.Output) error {
 	if c.Execute == nil {
-		return fmt.Errorf("%w", errors.ErrExecuteNil)
+		return fmt.Errorf("%w", errs.ErrExecuteNil)
 	}
 
 	if c.Handle != nil {
