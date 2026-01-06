@@ -15,15 +15,16 @@ package command
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console"
 	"gitoa.ru/go-4devs/console/output"
+	"gitoa.ru/go-4devs/console/command"
 	"gitoa.ru/go-4devs/config"
 )
 
-func CreateUser() *console.Command {
-	return &console.Command{
-		Name: "app:create-user",
-		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
+func CreateUser() command.Command {
+	return command.New(
+		"app:create-user",
+		"create user",
+		func(ctx context.Context, in config.Provider, out output.Output) error {
 			return nil
 		},
 	}
@@ -32,12 +33,17 @@ func CreateUser() *console.Command {
 ## Configure command
 
 ```go
-func CreateUser() *console.Command {
-	return &console.Command{
-        //...
-		Description: "Creates a new user.",
-		Help:        "This command allows you to create a user...",
+func CreateUser() command.Command {
+	return command.New(
+    "app:create-user",
+		"Creates a new user.",
+		Execute,
+    command.Help( "This command allows you to create a user..."),
 	}
+}
+
+func Execute(ctx context.Context, in config.Provider, out output.Output) error{
+	return nil
 }
 ```
 
@@ -45,10 +51,18 @@ func CreateUser() *console.Command {
 ## Add arguments
 
 ```go
-func CreateUser(required bool) *console.Command {
-	return &console.Command{
-        //....
-		Configure: func(ctx context.Context, cfg config.Definition) error {
+func CreateUser(required bool) command.Command {
+	return command.New(
+			"name",
+			"description",
+			Execute,
+			command.Configure(Configure(required)),
+		)
+	}
+}
+
+func Configure(required bool) func(ctx context.Context, cfg config.Definition) error {
+	return func (ctx context.Context, cfg config.Definition) error{
 			var opts []func(*arg.Option)
 			if required {
 				opts = append(opts, arg.Required)
@@ -58,7 +72,6 @@ func CreateUser(required bool) *console.Command {
 				)
 
 			return nil
-		},
 	}
 }
 ```
@@ -96,20 +109,23 @@ run command `bin/console app:create-user``
 
 The Execute field has access to the output stream to write messages to the console:
 ```go
-func CreateUser(required bool) *console.Command {
-	return &console.Command{
-        // ....
-		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
-			// outputs a message followed by a "\n"
-			out.Println(ctx, "User Creator")
-			out.Println(ctx, "Whoa!")
+func CreateUser(required bool) command.Command {
+	return command.New(
+		"app:user:create",
+		"create user",
+		Execute,
+	)
+}
 
-			// outputs a message without adding a "\n" at the end of the line
-			out.Print(ctx, "You are about to ", "create a user.")
+func Execute(ctx context.Context, in config.Provider, out output.Output) error {
+	// outputs a message followed by a "\n"
+	out.Println(ctx, "User Creator")
+	out.Println(ctx, "Whoa!")
 
-			return nil
-		},
-	}
+	// outputs a message without adding a "\n" at the end of the line
+	out.Print(ctx, "You are about to ", "create a user.")
+
+	return nil
 }
 ```
 
@@ -127,29 +143,31 @@ You are about to create a user.
 Use input options or arguments to pass information to the command:
 
 ```go
-func CreateUser(required bool) *console.Command {
-	return &console.Command{
-		Configure: func(ctx context.Context, cfg config.Definition) error {
-			var opts []func(*input.Argument)
-			if required {
-				opts = append(opts, argument.Required)
-			}
-			cfg.Add(
-				arg.String("username", "The username of the user.", arg.Required),
-				arg.String("password", "User password", opts...),
-			)
+func CreateUser() command.Command {
+	return command.New(
+		"app:user:create",
+		"create user",
+		Execute,
+		command.Configure(Configure),
+	)
+}
 
-			return nil
-		},
-		Execute: func(ctx context.Context, in config.Provider, out output.Output) error {
-			// outputs a message followed by a "\n"
-			username, _ := in.Value(ctx, "username")
-			out.Println(ctx, "User Creator")
-			out.Println(ctx, "Username: ", username.String())
+func Configure(ctx context.Context, cfg config.Definition) error {
+	cfg.Add(
+		arg.String("username", "The username of the user.", arg.Required),
+		arg.String("password", "User password"),
+	)
 
-			return nil
-		},
-	}
+	return nil
+}
+
+func Execute(ctx context.Context, in config.Provider, out output.Output) error {
+	// outputs a message followed by a "\n"
+	username, _ := in.Value(ctx, "username")
+	out.Println(ctx, "User Creator")
+	out.Println(ctx, "Username: ", username.String())
+
+	return nil
 }
 ```
 
@@ -180,7 +198,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
 	in := memory.Map{}
-    in.Set("andrey","username")
+  in.SetOption("andrey","username")
 	buf := bytes.Buffer{}
 	out := output.Buffer(&buf)
 
