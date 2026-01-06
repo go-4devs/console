@@ -1,7 +1,9 @@
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-gitoa.ru/go-4devs/config v0.0.8 h1:o4p8I9jWJMfiFVVKr50IqCGj1fF+8kmSPDkH0deRvn4=
-gitoa.ru/go-4devs/config v0.0.8/go.mod h1:jHKqVafFVW400LC0M4i1ifPapiI9sqpX/QTh+VMadKw=
+gitoa.ru/go-4devs/config v0.0.9 h1:Z43kM6k6ocC2YIRQkELq5zWO9LO8fl1l14RyqjLC4I4=
+gitoa.ru/go-4devs/config v0.0.9/go.mod h1:cLW1+4E4uM4Pw+z4RuKEKbO1Lz6UTs2b2fTPyeEgTx8=
+gitoa.ru/go-4devs/config v0.0.10 h1:NSagD0voj77/IGqRGsbR0DZmDvFcxbx+oRoWQnLnSy4=
+gitoa.ru/go-4devs/config v0.0.10/go.mod h1:cLW1+4E4uM4Pw+z4RuKEKbO1Lz6UTs2b2fTPyeEgTx8=
 golang.org/x/mod v0.31.0 h1:HaW9xtz0+kOcWKwli0ZXy79Ix+UW/vOfmWI5QVd2tgI=
 golang.org/x/mod v0.31.0/go.mod h1:43JraMp9cGx1Rx3AqioxrbrhNsLl2l/iNAvuBkrezpg=
 golang.org/x/sync v0.19.0 h1:vV+1eWNmZ5geRlYjzm2adRgW2/mcpevXNg50YZtPCE4=

@@ -25,6 +25,7 @@ type Command struct {
 	Bin         string
 	Name        string
 	Description string
+	Usage       func() (string, bool)
 	Help        string
 }
 

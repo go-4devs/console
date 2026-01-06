@@ -6,8 +6,8 @@ import (
 	"sort"
 	"sync"
 
-	cerr "gitoa.ru/go-4devs/console/errors"
-	"gitoa.ru/go-4devs/console/param"
+	"gitoa.ru/go-4devs/console/errs"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 var findCommand = regexp.MustCompile("([^:]+|)")
@@ -71,7 +71,7 @@ func (c *Commands) find(name string) (Command, error) {
 	}
 
 	for name, idx := range c.names {
-		if cmdRegexp.MatchString(name) && !param.IsHidden(c.cmds[idx]) {
+		if cmdRegexp.MatchString(name) && !setting.IsHidden(c.cmds[idx]) {
 			findCommands = append(findCommands, c.cmds[idx])
 		}
 	}
@@ -86,10 +86,10 @@ func (c *Commands) find(name string) (Command, error) {
 			names[i] = findCommands[i].Name()
 		}
 
-		return Command{}, cerr.AlternativesError{Alt: names, Err: cerr.ErrCommandDplicate}
+		return Command{}, errs.AlternativesError{Alt: names, Err: errs.ErrCommandDplicate}
 	}
 
-	return Command{}, fmt.Errorf("%w", cerr.ErrNotFound)
+	return Command{}, fmt.Errorf("%w", errs.ErrNotFound)
 }
 
 func (c *Commands) set(cmds ...Command) error {
@@ -99,7 +99,7 @@ func (c *Commands) set(cmds ...Command) error {
 
 	for _, cmd := range cmds {
 		if cmd.IsZero() {
-			return fmt.Errorf("command:%w", cerr.ErrCommandNil)
+			return fmt.Errorf("command:%w", errs.ErrCommandNil)
 		}
 
 		if idx, ok := c.names[cmd.Name()]; ok {
@@ -122,11 +122,11 @@ func (c *Commands) add(cmds ...Command) error {
 
 	for _, cmd := range cmds {
 		if cmd.IsZero() {
-			return fmt.Errorf("command:%w", cerr.ErrCommandNil)
+			return fmt.Errorf("command:%w", errs.ErrCommandNil)
 		}
 
 		if _, ok := c.names[cmd.Name()]; ok {
-			return fmt.Errorf("command %s:%w", cmd.Name(), cerr.ErrCommandDplicate)
+			return fmt.Errorf("command %s:%w", cmd.Name(), errs.ErrCommandDplicate)
 		}
 
 		c.names[cmd.Name()] = len(c.cmds)

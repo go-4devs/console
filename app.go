@@ -33,7 +33,10 @@ func WithInput(in config.BindProvider) func(*App) {
 
 // WithSkipArgs sets how many arguments are passed. For example, you don't need to pass the name of a single command.
 func WithSkipArgs(l int) func(*App) {
-	return WithInput(chain.New(arg.New(arg.WithArgs(os.Args[resolveSkip(l):])), &memory.Default{}))
+	return WithInput(chain.New(
+		arg.New(arg.WithArgs(os.Args[ResolveSkip(l):])),
+		&memory.Default{}),
+	)
 }
 
 // WithExit sets exit callback by default os.Exit.
@@ -53,7 +56,7 @@ func New(opts ...func(*App)) *App {
 		out:  output.Stdout(),
 		exit: os.Exit,
 		in: chain.New(
-			arg.New(arg.WithArgs(os.Args[resolveSkip(0):])),
+			arg.New(arg.WithArgs(os.Args[ResolveSkip(0):])),
 			&memory.Default{},
 		),
 		registry: registry.Add,
@@ -134,10 +137,14 @@ func (a *App) list(ctx context.Context) error {
 }
 
 func (a *App) printError(ctx context.Context, err error) {
-	command.Ansi(ctx, a.in, a.out).Println(ctx, "<error>\n\n  ", err, "\n</error>")
+	printErr(ctx, a.in, a.out, err)
 }
 
-func resolveSkip(in int) int {
+func printErr(ctx context.Context, in config.Provider, out output.Output, err error) {
+	command.Ansi(ctx, in, out).Printf(ctx, "<error>\n\n  %v\n</error>\n", err)
+}
+
+func ResolveSkip(in int) int {
 	res := 2
 
 	switch {

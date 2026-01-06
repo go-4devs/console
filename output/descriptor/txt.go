@@ -12,6 +12,7 @@ import (
 	"gitoa.ru/go-4devs/config/param"
 	"gitoa.ru/go-4devs/config/provider/arg"
 	"gitoa.ru/go-4devs/console/output"
+	"gitoa.ru/go-4devs/console/setting"
 )
 
 const (
@@ -22,9 +23,9 @@ const (
 //nolint:gochecknoglobals
 var (
 	txtFunc = template.FuncMap{
-		"synopsis":   txtSynopsis,
 		"definition": txtDefinition,
 		"help":       txtHelp,
+		"usage":      txtUsage,
 		"commands":   txtCommands,
 	}
 
@@ -34,11 +35,9 @@ var (
 {{- if .Description -}}
 <comment>Description:</comment>
   {{ .Description }}
-
 {{ end -}}
-<comment>Usage:</comment>
-  {{ .Name }} {{ synopsis .Options }}
-{{ definition .Options }}
+{{- usage . }}
+{{- definition .Options }}
 {{- help . }}
 		`))
 
@@ -128,6 +127,23 @@ func txtCommands(cmds []NSCommand) string {
 	return buf.String()
 }
 
+func txtUsage(cmd Command) string {
+	if cmd.Usage == nil {
+		return ""
+	}
+
+	data, has := cmd.Usage()
+	if has && data == "" {
+		return ""
+	}
+
+	if data == "" {
+		data = defaultUsage(setting.UsageData(cmd.Name, cmd.Options))
+	}
+
+	return "\n<comment>Usage:</comment>\n  " + data + "\n"
+}
+
 func txtHelp(cmd Command) string {
 	if cmd.Help == "" {
 		return ""
@@ -152,10 +168,12 @@ func txtDefinition(options config.Options) string {
 	return buf.String()
 }
 
-func txtSynopsis(options config.Options) string {
-	def := arg.NewViews(options, nil)
+func defaultUsage(data setting.UData) string {
+	def := arg.NewViews(data.Options, nil)
 
 	var buf bytes.Buffer
+	buf.WriteString(data.Name)
+	buf.WriteString(" ")
 
 	if len(def.Options()) > 0 {
 		buf.WriteString("[options] ")
