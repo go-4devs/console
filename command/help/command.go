@@ -126,8 +126,7 @@ func Execute(ctx context.Context, in config.Provider, out output.Output) error {
 	return nil
 }
 
-const tpl = `
-The <info>%[2]s</info> command displays help for a given command:
+const tpl = `The <info>%[2]s</info> command displays help for a given command:
   <info>%[1]s %[2]s list</info>
 You can also output the help in other formats by using the <comment>--format</comment> option:
   <info>%[1]s %[2]s --format=xml list</info>
