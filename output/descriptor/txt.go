@@ -29,7 +29,8 @@ var (
 		"commands":   txtCommands,
 	}
 
-	txtHelpTemplate = template.Must(template.New("txt_template").
+	txtHelpTemplate = template.Must(
+		template.New("txt_template").
 			Funcs(txtFunc).
 			Parse(`
 {{- if .Description -}}
@@ -38,8 +39,8 @@ var (
 {{ end -}}
 {{- usage . }}
 {{- definition .Options }}
-{{- help . }}
-		`))
+{{- help . }}`),
+	)
 
 	txtListTemplate = template.Must(template.New("txt_list").
 			Funcs(txtFunc).
@@ -149,12 +150,7 @@ func txtHelp(cmd Command) string {
 		return ""
 	}
 
-	var buf bytes.Buffer
-
-	buf.WriteString("\n<comment>Help:</comment>")
-	buf.WriteString(cmd.Help)
-
-	return buf.String()
+	return "\n<comment>Help:</comment>\n" + cmd.Help + "\n"
 }
 
 func txtDefinition(options config.Options) string {
