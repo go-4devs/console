@@ -40,7 +40,7 @@ func RExecute(ctx context.Context, in config.Provider, out output.Output) error 
 		return fmt.Errorf("configure:%w", err)
 	}
 
-	prov, err := provs.Provider(cfg.Format(ctx))
+	prov, err := provs.ByName(cfg.Format(ctx))
 	if err != nil {
 		return fmt.Errorf("prov:%w", errs.AlternativesError{Alt: provs.Names(), Err: err})
 	}
