@@ -11,7 +11,7 @@ const tpl = `The <info>%[2]s</info> command lists all commands:
 You can also display the commands for a specific namespace:
   <info>%[1]s %[2]s test</info>
 You can also output the information in other formats by using the <comment>--format</comment> option:
-  <info>%[1]s %[2]s --format=xml</info>`
+  <info>%[1]s %[2]s --format=txt</info>`
 
 func Help(data setting.HData) (string, error) {
 	return fmt.Sprintf(tpl, data.Bin, data.Name), nil

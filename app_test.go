@@ -18,6 +18,21 @@ const (
 	flagNoANSI = "--no-ansi"
 )
 
+func TestAppsDoNotShareCommands(t *testing.T) {
+	t.Parallel()
+
+	code := 0
+	exit := func(c int) { code = c }
+	hello := command.New("hello", "hi", Execute)
+
+	console.New(console.WithExit(exit)).Add(hello)
+	console.New(console.WithExit(exit)).Add(hello)
+
+	if code != 0 {
+		t.Fatalf("second app exited %d", code)
+	}
+}
+
 func TestShortFlagIsNotCommandName(t *testing.T) { //nolint:paralleltest // os.Args is process-wide
 	old := os.Args
 
@@ -108,7 +123,7 @@ func ExampleNew_help() {
 	//       --log-{service}-level[=LOG-{SERVICE}-LEVEL]    service level [default:debug]
 	//       --bool                                         test bool option
 	//       --duration[=DURATION]                          test duration with default
-	//       --ansi                                         Do not ask any interactive question
+	//       --ansi                                         Force ANSI output
 	//   -V, --version                                      Display this application version
 	//   -h, --help                                         Display this help message
 	//   -v, --verbose                                      Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace  (multiple values allowed)
@@ -141,7 +156,7 @@ func ExampleNew_list() {
 	//
 	// Options:
 	//       --no-ansi  Disable ANSI output
-	//       --ansi     Do not ask any interactive question
+	//       --ansi     Force ANSI output
 	//   -V, --version  Display this application version
 	//   -h, --help     Display this help message
 	//   -v, --verbose  Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace  (multiple values allowed)
@@ -155,7 +170,6 @@ func ExampleNew_list() {
 	// fdevs
 	//   fdevs:console:arg    Understanding how Console Arguments and Options Are Handled
 	//   fdevs:console:hello  example hello command
-	//   fdevs:console:test   test command
 	// test
 	//   test:command         test command
 }

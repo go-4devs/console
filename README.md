@@ -53,25 +53,26 @@ func Execute(ctx context.Context, in config.Provider, out output.Output) error{
 ```go
 func CreateUser(required bool) command.Command {
 	return command.New(
-			"name",
-			"description",
-			Execute,
-			command.Configure(Configure(required)),
-		)
-	}
+		"app:create-user",
+		"Creates a new user.",
+		UserExecute,
+		command.Configure(UserConfigure(required)),
+	)
 }
 
-func Configure(required bool) func(ctx context.Context, cfg config.Definition) error {
-	return func (ctx context.Context, cfg config.Definition) error{
-			var opts []func(*arg.Option)
-			if required {
-				opts = append(opts, arg.Required)
-			}
-			cfg.Add(
-					arg.String("password", "User password", opts...)
-				)
+func UserConfigure(required bool) func(context.Context, config.Definition) error {
+	return func(_ context.Context, cfg config.Definition) error {
+		var opts []param.Option
+		if required {
+			opts = append(opts, option.Required)
+		}
 
-			return nil
+		cfg.Add(
+			arg.String("username", "The username of the user.", option.Required),
+			arg.String("password", "User password", opts...),
+		)
+
+		return nil
 	}
 }
 ```

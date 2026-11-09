@@ -33,6 +33,12 @@ func TestNew(t *testing.T) {
 				label.Int("int key", 42),
 			},
 		},
+		"": {
+			ex: "msg=\"\", int=\"42\"",
+			kv: []label.KeyValue{
+				label.Int("int", 42),
+			},
+		},
 		"msg with newline \n": {
 			ex: "msg=\"msg with newline\", int=\"42\"\n",
 			kv: []label.KeyValue{

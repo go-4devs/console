@@ -29,7 +29,7 @@ func Buffer(buf *bytes.Buffer) Output {
 func FormatString(_ verbosity.Verbosity, msg string, kv ...label.KeyValue) string {
 	if len(kv) > 0 {
 		nline := ""
-		if msg[len(msg)-1:] == newline {
+		if len(msg) > 0 && msg[len(msg)-1:] == newline {
 			nline = newline
 		}
 

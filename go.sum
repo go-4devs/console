@@ -2,8 +2,6 @@ github.com/go-4devs/config v0.0.17 h1:+XyNlP5suKFScJWxbB1cStbXdev0yqxU9X0QC5ui/L
 github.com/go-4devs/config v0.0.17/go.mod h1:XgIlF8un2/CRtr+uKHbRvj5ygkrFLAoGxFYtMW+DEe4=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-gitoa.ru/go-4devs/config v0.0.11 h1:lPqWT2ppRybIUqqUDEUFfTZd3vl4+E5QkDFhhDyH2OE=
-gitoa.ru/go-4devs/config v0.0.11/go.mod h1:cLW1+4E4uM4Pw+z4RuKEKbO1Lz6UTs2b2fTPyeEgTx8=
 golang.org/x/mod v0.42.0 h1:ICeL3t2L30ljSPHHxDnR4fqVcBt/zR2zJAb9juavmQg=
 golang.org/x/mod v0.42.0/go.mod h1:u5fzIrRInkL8MaO1cbRkUHT64v303YIT5KEqpNr7jRs=
 golang.org/x/sync v0.25.0 h1:dJnifr0nMV8/SBnBvdo4eSGGnrc3O4FFx6IqvtLcmRs=

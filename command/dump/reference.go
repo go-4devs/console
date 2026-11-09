@@ -14,8 +14,6 @@ import (
 	"github.com/go-4devs/console/output"
 )
 
-//go:generate go tool config config:generate
-
 const NameRefernce = "config:dump-reference"
 
 func Command() command.Command {
@@ -30,7 +28,7 @@ func RExecute(ctx context.Context, in config.Provider, out output.Output) error 
 
 	cfg := NewRConfigureConfig(in)
 
-	cmd, err := registry.Find(cfg.CommandName(ctx))
+	cmd, err := registry.Current(ctx).Find(cfg.CommandName(ctx))
 	if err != nil {
 		return fmt.Errorf("cmd:%w", err)
 	}

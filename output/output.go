@@ -10,6 +10,20 @@ import (
 	"github.com/go-4devs/console/output/verbosity"
 )
 
+// Capture remembers the first write error from out.
+func Capture(out Output) (Output, func() error) {
+	var err error
+
+	return func(ctx context.Context, verb verbosity.Verbosity, msg string, kv ...label.KeyValue) (int, error) {
+		n, werr := out(ctx, verb, msg, kv...)
+		if werr != nil && err == nil {
+			err = werr
+		}
+
+		return n, werr
+	}, func() error { return err }
+}
+
 func writeError(_ int, err error) {
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)

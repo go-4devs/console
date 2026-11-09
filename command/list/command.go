@@ -52,7 +52,7 @@ func Configure(_ context.Context, cfg config.Definition) error {
 			arg.String(ArgumentNamespace, "The namespace name"),
 			option.String(OptionFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 				option.Required,
-				option.Default(value.New(formats[0])),
+				option.Default(value.New(descriptor.FormatTxt)),
 				validator.Valid(
 					validator.NotBlank,
 					validator.Enum(formats...),
@@ -77,7 +77,8 @@ func Execite(ctx context.Context, in config.Provider, out output.Output) error {
 	def := definition.New()
 	command.Default(def)
 
-	cmds := registry.Commands()
+	reg := registry.Current(ctx)
+	cmds := reg.Names()
 	commands := descriptor.Commands{
 		Namespace: ns,
 		Options:   def.With(param.New(descriptor.TxtStyle())),
@@ -91,7 +92,7 @@ func Execite(ctx context.Context, in config.Provider, out output.Output) error {
 			continue
 		}
 
-		cmd, _ := registry.Find(name)
+		cmd, _ := reg.Find(name)
 		if setting.IsHidden(cmd) {
 			continue
 		}
