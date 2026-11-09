@@ -60,7 +60,7 @@ func (c *Commands) find(name string) (Command, error) {
 	}
 
 	nameRegexp := findCommand.ReplaceAllStringFunc(name, func(in string) string {
-		return in + "[^:]*"
+		return regexp.QuoteMeta(in) + "[^:]*"
 	})
 
 	findCommands := make([]Command, 0, len(c.cmds))

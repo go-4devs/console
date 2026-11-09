@@ -2,14 +2,19 @@ package command_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/go-4devs/config"
 	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
 	"github.com/go-4devs/console/output"
 )
 
-const testCommand = "fdevs:console:test"
+const (
+	testCommand  = "fdevs:console:test"
+	startCommand = "app:start"
+)
 
 func testEmtyExecute(context.Context, config.Provider, output.Output) error {
 	return nil
@@ -31,6 +36,7 @@ func TestCommandsCommand(t *testing.T) {
 	_ = commands.Add(
 		command.New(testCommand, "fdevs console test", testEmtyExecute),
 		command.New("fdevs:console:arg", "fdevs console arg", testEmtyExecute),
+		command.New(startCommand, "start", testEmtyExecute),
 	)
 
 	for name, ex := range cases {
@@ -44,5 +50,15 @@ func TestCommandsCommand(t *testing.T) {
 		if res.Name() != ex {
 			t.Errorf("%v expect: %s, got: %s", name, ex, res)
 		}
+	}
+
+	res, err := commands.Find("app:s")
+	if err != nil || res.Name() != startCommand {
+		t.Fatalf("app:s expect %s, got %v %v", startCommand, res.Name(), err)
+	}
+
+	_, err = commands.Find("app:.")
+	if !errors.Is(err, errs.ErrNotFound) {
+		t.Fatalf("app:. expect not found, got %v", err)
 	}
 }
