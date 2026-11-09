@@ -116,7 +116,7 @@ func (a *App) exec(ctx context.Context, cmd command.Command) {
 
 func (a *App) commandName() string {
 	name := list.Name
-	if len(os.Args) > 1 && len(os.Args[1]) > 1 && os.Args[1][1] != '-' {
+	if len(os.Args) > 1 && len(os.Args[1]) > 1 && os.Args[1][0] != '-' {
 		name = os.Args[1]
 	}
 

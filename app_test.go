@@ -1,17 +1,51 @@
 package console_test
 
 import (
+	"bytes"
 	"context"
 	"os"
+	"strings"
+	"testing"
 
 	"github.com/go-4devs/console"
 	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/output"
 )
 
 const (
 	binConsole = "bin/console"
+	flagHelp   = "-h"
 	flagNoANSI = "--no-ansi"
 )
+
+func TestShortFlagIsNotCommandName(t *testing.T) { //nolint:paralleltest // os.Args is process-wide
+	old := os.Args
+
+	t.Cleanup(func() { os.Args = old })
+
+	os.Args = []string{binConsole, flagHelp, flagNoANSI}
+
+	var buf bytes.Buffer
+
+	code := 0
+
+	console.New(
+		console.WithExit(func(c int) { code = c }),
+		console.WithOutput(output.Buffer(&buf)),
+	).Execute(context.Background())
+
+	if code != 0 {
+		t.Fatalf("exit %d, output: %s", code, buf.String())
+	}
+
+	if strings.Contains(buf.String(), "not found") {
+		t.Fatalf("-h was used as a command name: %s", buf.String())
+	}
+
+	if !strings.Contains(buf.String(), "Lists commands") {
+		t.Fatalf("expected list help, got: %s", buf.String())
+	}
+}
 
 //nolint:lll
 func ExampleNew_help() {
@@ -19,7 +53,7 @@ func ExampleNew_help() {
 	os.Args = []string{
 		binConsole,
 		"test:command",
-		"-h",
+		flagHelp,
 		flagNoANSI,
 	}
 
