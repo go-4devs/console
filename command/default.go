@@ -5,11 +5,11 @@ import (
 	"math"
 	"os"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/verbosity"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/output/verbosity"
 )
 
 const (

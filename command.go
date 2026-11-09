@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/output"
 )
 
 type (

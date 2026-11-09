@@ -5,17 +5,17 @@ import (
 	"errors"
 	"fmt"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition"
-	"gitoa.ru/go-4devs/config/provider/chain"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/command/help"
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/internal/registry"
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/setting"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition"
+	"github.com/go-4devs/config/provider/chain"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/command/help"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/internal/registry"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/setting"
 )
 
 // Execute the current command with option.

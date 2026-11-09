@@ -1,8 +1,8 @@
 # Console
 
-![Build Status](https://gitoa.ru/go-4devs/console/actions/workflows/goaction.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/gitoa.ru/go-4devs/console)](https://goreportcard.com/report/gitoa.ru/go-4devs/console)
-[![GoDoc](https://godoc.org/gitoa.ru/go-4devs/console?status.svg)](http://godoc.org/gitoa.ru/go-4devs/console)
+![Build Status](https://github.com/go-4devs/console/actions/workflows/goaction.yml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/go-4devs/console)](https://goreportcard.com/report/github.com/go-4devs/console)
+[![GoDoc](https://godoc.org/github.com/go-4devs/console?status.svg)](http://godoc.org/github.com/go-4devs/console)
 
 
 ## Creating a Command
@@ -15,9 +15,9 @@ package command
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/config"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/config"
 )
 
 func CreateUser() command.Command {
@@ -86,8 +86,8 @@ package main
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/example/pkg/command"
 )
 
 func main() {
@@ -189,10 +189,10 @@ import (
 	"context"
 	"testing"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/console/output"
 )
 
 func TestCreateUser(t *testing.T) {

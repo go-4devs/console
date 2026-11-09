@@ -1,4 +1,2 @@
-gitoa.ru/go-4devs/config v0.0.10 h1:NSagD0voj77/IGqRGsbR0DZmDvFcxbx+oRoWQnLnSy4=
-gitoa.ru/go-4devs/config v0.0.10/go.mod h1:cLW1+4E4uM4Pw+z4RuKEKbO1Lz6UTs2b2fTPyeEgTx8=
-gitoa.ru/go-4devs/console v0.4.0 h1:3N4VMWsHsaP32nWHxALxjPhp/MhYx1hXZdDl3xGJQ3k=
-gitoa.ru/go-4devs/console v0.4.0/go.mod h1:+J69iA4KQfC2H1FxItwL4pLkb3oW8g466qUSo0jWYjo=
+github.com/go-4devs/config v0.0.17 h1:+XyNlP5suKFScJWxbB1cStbXdev0yqxU9X0QC5ui/LU=
+github.com/go-4devs/config v0.0.17/go.mod h1:XgIlF8un2/CRtr+uKHbRvj5ygkrFLAoGxFYtMW+DEe4=

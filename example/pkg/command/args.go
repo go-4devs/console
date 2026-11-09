@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/output"
 )
 
 func Args() command.Command {

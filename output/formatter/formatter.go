@@ -5,7 +5,7 @@ import (
 	"context"
 	"regexp"
 
-	"gitoa.ru/go-4devs/console/output/style"
+	"github.com/go-4devs/console/output/style"
 )
 
 var re = regexp.MustCompile(`<(([a-z][^<>]+)|/([a-z][^<>]+)?)>`)

@@ -3,8 +3,8 @@ package setting
 import (
 	"fmt"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/errs"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/errs"
 )
 
 type key uint8

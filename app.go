@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/provider/arg"
-	"gitoa.ru/go-4devs/config/provider/chain"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/command/help"
-	"gitoa.ru/go-4devs/console/command/list"
-	"gitoa.ru/go-4devs/console/internal/registry"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/provider/arg"
+	"github.com/go-4devs/config/provider/chain"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/command/help"
+	"github.com/go-4devs/console/command/list"
+	"github.com/go-4devs/console/internal/registry"
+	"github.com/go-4devs/console/output"
 )
 
 // WithOutput sets outpu,^ by default output os.Stdout.

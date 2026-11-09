@@ -3,9 +3,9 @@ package output
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console/output/formatter"
-	"gitoa.ru/go-4devs/console/output/label"
-	"gitoa.ru/go-4devs/console/output/verbosity"
+	"github.com/go-4devs/console/output/formatter"
+	"github.com/go-4devs/console/output/label"
+	"github.com/go-4devs/console/output/verbosity"
 )
 
 func Format(out Output, format *formatter.Formatter) Output {

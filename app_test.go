@@ -4,18 +4,23 @@ import (
 	"context"
 	"os"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/command"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/command"
+)
+
+const (
+	binConsole = "bin/console"
+	flagNoANSI = "--no-ansi"
 )
 
 //nolint:lll
 func ExampleNew_help() {
 	ctx := context.Background()
 	os.Args = []string{
-		"bin/console",
+		binConsole,
 		"test:command",
 		"-h",
-		"--no-ansi",
+		flagNoANSI,
 	}
 
 	console.New(console.WithExit(func(int) {})).
@@ -52,8 +57,8 @@ func ExampleNew_list() {
 	ctx := context.Background()
 
 	os.Args = []string{
-		"bin/console",
-		"--no-ansi",
+		binConsole,
+		flagNoANSI,
 	}
 
 	console.New(

@@ -8,17 +8,17 @@ import (
 	"testing"
 	"time"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition/group"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/definition/proto"
-	"gitoa.ru/go-4devs/config/provider/arg"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition/group"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/config/definition/proto"
+	"github.com/go-4devs/config/provider/arg"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/output"
 )
 
 //nolint:gochecknoinits

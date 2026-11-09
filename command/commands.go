@@ -6,8 +6,8 @@ import (
 	"sort"
 	"sync"
 
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/setting"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/setting"
 )
 
 var findCommand = regexp.MustCompile("([^:]+|)")

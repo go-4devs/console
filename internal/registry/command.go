@@ -3,7 +3,7 @@ package registry
 import (
 	"fmt"
 
-	"gitoa.ru/go-4devs/console/command"
+	"github.com/go-4devs/console/command"
 )
 
 //nolint:gochecknoglobals

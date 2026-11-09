@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log"
 
-	"gitoa.ru/go-4devs/config/provider/chain"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config/provider/chain"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/output"
 )
 
 func ExampleRun() {

@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"gitoa.ru/go-4devs/console/output/label"
-	"gitoa.ru/go-4devs/console/output/verbosity"
+	"github.com/go-4devs/console/output/label"
+	"github.com/go-4devs/console/output/verbosity"
 )
 
 const newline = "\n"

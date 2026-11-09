@@ -3,7 +3,7 @@ package list
 import (
 	"fmt"
 
-	"gitoa.ru/go-4devs/console/setting"
+	"github.com/go-4devs/console/setting"
 )
 
 const tpl = `The <info>%[2]s</info> command lists all commands:

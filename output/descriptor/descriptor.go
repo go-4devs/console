@@ -5,8 +5,8 @@ import (
 	"errors"
 	"sync"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/output"
 )
 
 var ErrDescriptorNotFound = errors.New("descriptor not found")
