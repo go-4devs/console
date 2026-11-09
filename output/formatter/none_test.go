@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"gitoa.ru/go-4devs/console/output/formatter"
+	"github.com/go-4devs/console/output/formatter"
 )
 
 func TestNone(t *testing.T) {
@@ -13,11 +13,13 @@ func TestNone(t *testing.T) {
 	ctx := context.Background()
 	none := formatter.None()
 
+	const body = "<body>body</body>"
+
 	cases := map[string]string{
 		"<info>message info</info>":    "message info",
 		"<error>message error</error>": "message error",
 		"<comment><scheme></comment>":  "<scheme>",
-		"<body>body</body>":            "<body>body</body>",
+		body:                           body,
 	}
 
 	for msg, ex := range cases {

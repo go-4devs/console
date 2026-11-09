@@ -2,11 +2,18 @@ package command_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/output"
+)
+
+const (
+	testCommand  = "fdevs:console:test"
+	startCommand = "app:start"
 )
 
 func testEmtyExecute(context.Context, config.Provider, output.Output) error {
@@ -17,18 +24,19 @@ func TestCommandsCommand(t *testing.T) {
 	t.Parallel()
 
 	cases := map[string]string{
-		"fdevs:console:test": "fdevs:console:test",
-		"fd:c:t":             "fdevs:console:test",
-		"fd::t":              "fdevs:console:test",
-		"f:c:t":              "fdevs:console:test",
-		"f:c:a":              "fdevs:console:arg",
+		testCommand: testCommand,
+		"fd:c:t":    testCommand,
+		"fd::t":     testCommand,
+		"f:c:t":     testCommand,
+		"f:c:a":     "fdevs:console:arg",
 	}
 
 	var commands command.Commands
 
 	_ = commands.Add(
-		command.New("fdevs:console:test", "fdevs console test", testEmtyExecute),
+		command.New(testCommand, "fdevs console test", testEmtyExecute),
 		command.New("fdevs:console:arg", "fdevs console arg", testEmtyExecute),
+		command.New(startCommand, "start", testEmtyExecute),
 	)
 
 	for name, ex := range cases {
@@ -42,5 +50,15 @@ func TestCommandsCommand(t *testing.T) {
 		if res.Name() != ex {
 			t.Errorf("%v expect: %s, got: %s", name, ex, res)
 		}
+	}
+
+	res, err := commands.Find("app:s")
+	if err != nil || res.Name() != startCommand {
+		t.Fatalf("app:s expect %s, got %v %v", startCommand, res.Name(), err)
+	}
+
+	_, err = commands.Find("app:.")
+	if !errors.Is(err, errs.ErrNotFound) {
+		t.Fatalf("app:. expect not found, got %v", err)
 	}
 }

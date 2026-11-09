@@ -1,8 +1,8 @@
 # Console
 
-![Build Status](https://gitoa.ru/go-4devs/console/actions/workflows/goaction.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/gitoa.ru/go-4devs/console)](https://goreportcard.com/report/gitoa.ru/go-4devs/console)
-[![GoDoc](https://godoc.org/gitoa.ru/go-4devs/console?status.svg)](http://godoc.org/gitoa.ru/go-4devs/console)
+![Build Status](https://github.com/go-4devs/console/actions/workflows/goaction.yml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/go-4devs/console)](https://goreportcard.com/report/github.com/go-4devs/console)
+[![GoDoc](https://godoc.org/github.com/go-4devs/console?status.svg)](http://godoc.org/github.com/go-4devs/console)
 
 
 ## Creating a Command
@@ -15,9 +15,9 @@ package command
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/config"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/config"
 )
 
 func CreateUser() command.Command {
@@ -53,25 +53,26 @@ func Execute(ctx context.Context, in config.Provider, out output.Output) error{
 ```go
 func CreateUser(required bool) command.Command {
 	return command.New(
-			"name",
-			"description",
-			Execute,
-			command.Configure(Configure(required)),
-		)
-	}
+		"app:create-user",
+		"Creates a new user.",
+		UserExecute,
+		command.Configure(UserConfigure(required)),
+	)
 }
 
-func Configure(required bool) func(ctx context.Context, cfg config.Definition) error {
-	return func (ctx context.Context, cfg config.Definition) error{
-			var opts []func(*arg.Option)
-			if required {
-				opts = append(opts, arg.Required)
-			}
-			cfg.Add(
-					arg.String("password", "User password", opts...)
-				)
+func UserConfigure(required bool) func(context.Context, config.Definition) error {
+	return func(_ context.Context, cfg config.Definition) error {
+		var opts []param.Option
+		if required {
+			opts = append(opts, option.Required)
+		}
 
-			return nil
+		cfg.Add(
+			arg.String("username", "The username of the user.", option.Required),
+			arg.String("password", "User password", opts...),
+		)
+
+		return nil
 	}
 }
 ```
@@ -86,8 +87,8 @@ package main
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/example/pkg/command"
 )
 
 func main() {
@@ -189,10 +190,10 @@ import (
 	"context"
 	"testing"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/console/output"
 )
 
 func TestCreateUser(t *testing.T) {

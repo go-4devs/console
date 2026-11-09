@@ -3,8 +3,8 @@ package console
 import (
 	"fmt"
 
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/internal/registry"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/internal/registry"
 )
 
 // MustRegister register command or panic if err.

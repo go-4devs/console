@@ -1,21 +1,104 @@
 package console_test
 
 import (
+	"bytes"
 	"context"
 	"os"
+	"strings"
+	"testing"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/command"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/output"
 )
+
+const (
+	binConsole = "bin/console"
+	flagHelp   = "-h"
+	flagNoANSI = "--no-ansi"
+)
+
+func TestAppsDoNotShareCommands(t *testing.T) {
+	t.Parallel()
+
+	code := 0
+	exit := func(c int) { code = c }
+	hello := command.New("hello", "hi", Execute)
+
+	console.New(console.WithExit(exit)).Add(hello)
+	console.New(console.WithExit(exit)).Add(hello)
+
+	if code != 0 {
+		t.Fatalf("second app exited %d", code)
+	}
+}
+
+func TestShortFlagIsNotCommandName(t *testing.T) { //nolint:paralleltest // os.Args is process-wide
+	old := os.Args
+
+	t.Cleanup(func() { os.Args = old })
+
+	os.Args = []string{binConsole, flagHelp, flagNoANSI}
+
+	var buf bytes.Buffer
+
+	code := 0
+
+	console.New(
+		console.WithExit(func(c int) { code = c }),
+		console.WithOutput(output.Buffer(&buf)),
+	).Execute(context.Background())
+
+	if code != 0 {
+		t.Fatalf("exit %d, output: %s", code, buf.String())
+	}
+
+	if strings.Contains(buf.String(), "not found") {
+		t.Fatalf("-h was used as a command name: %s", buf.String())
+	}
+
+	if !strings.Contains(buf.String(), "Lists commands") {
+		t.Fatalf("expected list help, got: %s", buf.String())
+	}
+}
+
+func TestBadArgExitsNonZero(t *testing.T) { //nolint:paralleltest // os.Args is process-wide
+	old := os.Args
+
+	t.Cleanup(func() { os.Args = old })
+
+	os.Args = []string{binConsole, "--bogus"}
+
+	var buf bytes.Buffer
+
+	code := 0
+
+	console.New(
+		console.WithExit(func(c int) { code = c }),
+		console.WithOutput(output.Buffer(&buf)),
+	).Execute(context.Background())
+
+	if code == 0 {
+		t.Fatalf("exit 0, output: %s", buf.String())
+	}
+
+	if strings.Count(buf.String(), "bogus") != 1 {
+		t.Fatalf("error printed %d times: %s", strings.Count(buf.String(), "bogus"), buf.String())
+	}
+
+	if !strings.Contains(buf.String(), "Lists commands") {
+		t.Fatalf("expected help after the error, got: %s", buf.String())
+	}
+}
 
 //nolint:lll
 func ExampleNew_help() {
 	ctx := context.Background()
 	os.Args = []string{
-		"bin/console",
+		binConsole,
 		"test:command",
-		"-h",
-		"--no-ansi",
+		flagHelp,
+		flagNoANSI,
 	}
 
 	console.New(console.WithExit(func(int) {})).
@@ -40,7 +123,7 @@ func ExampleNew_help() {
 	//       --log-{service}-level[=LOG-{SERVICE}-LEVEL]    service level [default:debug]
 	//       --bool                                         test bool option
 	//       --duration[=DURATION]                          test duration with default
-	//       --ansi                                         Do not ask any interactive question
+	//       --ansi                                         Force ANSI output
 	//   -V, --version                                      Display this application version
 	//   -h, --help                                         Display this help message
 	//   -v, --verbose                                      Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace  (multiple values allowed)
@@ -52,8 +135,8 @@ func ExampleNew_list() {
 	ctx := context.Background()
 
 	os.Args = []string{
-		"bin/console",
-		"--no-ansi",
+		binConsole,
+		flagNoANSI,
 	}
 
 	console.New(
@@ -73,7 +156,7 @@ func ExampleNew_list() {
 	//
 	// Options:
 	//       --no-ansi  Disable ANSI output
-	//       --ansi     Do not ask any interactive question
+	//       --ansi     Force ANSI output
 	//   -V, --version  Display this application version
 	//   -h, --help     Display this help message
 	//   -v, --verbose  Increase the verbosity of messages: -v for info output, -vv for debug and -vvv for trace  (multiple values allowed)
@@ -87,7 +170,6 @@ func ExampleNew_list() {
 	// fdevs
 	//   fdevs:console:arg    Understanding how Console Arguments and Options Are Handled
 	//   fdevs:console:hello  example hello command
-	//   fdevs:console:test   test command
 	// test
 	//   test:command         test command
 }

@@ -5,11 +5,11 @@ import (
 	"math"
 	"os"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/verbosity"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/output/verbosity"
 )
 
 const (
@@ -35,7 +35,7 @@ const (
 func Default(def config.Definition) {
 	def.Add(
 		option.Bool(OptionNoAnsi, "Disable ANSI output", option.Position(defaultOptionsPosition)),
-		option.Bool(OptionAnsi, "Do not ask any interactive question", option.Position(defaultOptionsPosition)),
+		option.Bool(OptionAnsi, "Force ANSI output", option.Position(defaultOptionsPosition)),
 		option.Bool(OptionVersion, "Display this application version", option.Short('V'), option.Position(defaultOptionsPosition)),
 		option.Bool(OptionHelp, "Display this help message", option.Short('h'), option.Position(defaultOptionsPosition)),
 		option.Bool(OptionVerbose,
@@ -79,9 +79,9 @@ func Ansi(ctx context.Context, in config.Provider, out output.Output) output.Out
 }
 
 func lookupEnv(name string) bool {
-	v, has := os.LookupEnv(name)
+	_, has := os.LookupEnv(name)
 
-	return has && v == "true"
+	return has
 }
 
 func Verbose(ctx context.Context, in config.Provider, out output.Output) output.Output {

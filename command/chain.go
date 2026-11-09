@@ -3,8 +3,8 @@ package command
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/output"
 )
 
 // ChainPrepare creates middleware for configures command.

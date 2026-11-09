@@ -5,8 +5,8 @@ import (
 	"context"
 	"testing"
 
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/label"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/output/label"
 )
 
 func TestNew(t *testing.T) {
@@ -16,12 +16,14 @@ func TestNew(t *testing.T) {
 	buf := bytes.Buffer{}
 	wr := output.New(&buf, output.FormatString)
 
+	const message = "message"
+
 	cases := map[string]struct {
 		ex string
 		kv []label.KeyValue
 	}{
-		"message": {
-			ex: "message",
+		message: {
+			ex: message,
 		},
 		"msg with kv": {
 			ex: "msg=\"msg with kv\", string key=\"string value\", bool key=\"false\", int key=\"42\"",
@@ -29,6 +31,12 @@ func TestNew(t *testing.T) {
 				label.String("string key", "string value"),
 				label.Bool("bool key", false),
 				label.Int("int key", 42),
+			},
+		},
+		"": {
+			ex: "msg=\"\", int=\"42\"",
+			kv: []label.KeyValue{
+				label.Int("int", 42),
 			},
 		},
 		"msg with newline \n": {

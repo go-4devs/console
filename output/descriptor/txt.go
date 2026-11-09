@@ -7,12 +7,12 @@ import (
 	"strings"
 	"text/template"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/param"
-	"gitoa.ru/go-4devs/config/provider/arg"
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/setting"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/config/param"
+	"github.com/go-4devs/config/provider/arg"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/setting"
 )
 
 const (

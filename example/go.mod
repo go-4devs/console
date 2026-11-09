@@ -1,10 +1,10 @@
-module gitoa.ru/go-4devs/console/example
+module github.com/go-4devs/console/example
 
-go 1.24.0
-
-toolchain go1.24.1
+go 1.27.3
 
 require (
-	gitoa.ru/go-4devs/config v0.0.10
-	gitoa.ru/go-4devs/console v0.4.0
+	github.com/go-4devs/config v0.0.17
+	github.com/go-4devs/console v0.4.1
 )
+
+replace github.com/go-4devs/console => ../

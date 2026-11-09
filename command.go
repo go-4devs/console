@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/output"
 )
 
 type (
@@ -143,74 +143,34 @@ func (c *Command) Init(ctx context.Context, cfg config.Definition) error {
 
 // ChainPrepare creates middleware for configures command.
 func ChainPrepare(prepare ...Prepare) Prepare {
-	num := len(prepare)
-	if num == 1 {
-		return prepare[0]
-	}
-
-	if num > 1 {
-		lastI := num - 1
-
-		return func(ctx context.Context, def config.Definition, next Configure) error {
-			var (
-				chainHandler func(context.Context, config.Definition) error
-				curI         int
-			)
-
-			chainHandler = func(currentCtx context.Context, currentDef config.Definition) error {
-				if curI == lastI {
-					return next(currentCtx, currentDef)
-				}
-
-				curI++
-				err := prepare[curI](currentCtx, currentDef, chainHandler)
-				curI--
-
-				return err
-			}
-
-			return prepare[0](ctx, def, chainHandler)
+	fns := make([]command.PrepareFn, len(prepare))
+	for i := range prepare {
+		fn := prepare[i]
+		fns[i] = func(ctx context.Context, cfg config.Definition, next command.ConfigureFn) error {
+			return fn(ctx, cfg, Configure(next))
 		}
 	}
 
+	chained := command.ChainPrepare(fns...)
+
 	return func(ctx context.Context, cfg config.Definition, next Configure) error {
-		return next(ctx, cfg)
+		return chained(ctx, cfg, command.ConfigureFn(next))
 	}
 }
 
 // ChainHandle creates middleware for executes command.
 func ChainHandle(handlers ...Handle) Handle {
-	num := len(handlers)
-	if num == 1 {
-		return handlers[0]
-	}
-
-	if num > 1 {
-		lastI := num - 1
-
-		return func(ctx context.Context, in config.Provider, out output.Output, next Action) error {
-			var (
-				chainHandler func(context.Context, config.Provider, output.Output) error
-				curI         int
-			)
-
-			chainHandler = func(currentCtx context.Context, currentIn config.Provider, currentOut output.Output) error {
-				if curI == lastI {
-					return next(currentCtx, currentIn, currentOut)
-				}
-
-				curI++
-				err := handlers[curI](currentCtx, currentIn, currentOut, chainHandler)
-				curI--
-
-				return err
-			}
-
-			return handlers[0](ctx, in, out, chainHandler)
+	fns := make([]command.HandleFn, len(handlers))
+	for i := range handlers {
+		fn := handlers[i]
+		fns[i] = func(ctx context.Context, in config.Provider, out output.Output, next command.ExecuteFn) error {
+			return fn(ctx, in, out, Action(next))
 		}
 	}
 
+	chained := command.ChainHandle(fns...)
+
 	return func(ctx context.Context, in config.Provider, out output.Output, next Action) error {
-		return next(ctx, in, out)
+		return chained(ctx, in, out, command.ExecuteFn(next))
 	}
 }

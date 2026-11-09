@@ -5,10 +5,10 @@ import (
 	"context"
 	"testing"
 
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/console/output"
 )
 
 func TestCreateUser(t *testing.T) {

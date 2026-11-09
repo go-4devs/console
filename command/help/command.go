@@ -7,19 +7,19 @@ import (
 	"os"
 	"strings"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/param"
-	"gitoa.ru/go-4devs/config/provider/arg"
-	"gitoa.ru/go-4devs/config/validator"
-	"gitoa.ru/go-4devs/config/value"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/internal/registry"
-	"gitoa.ru/go-4devs/console/output"
-	"gitoa.ru/go-4devs/console/output/descriptor"
-	"gitoa.ru/go-4devs/console/setting"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/config/param"
+	"github.com/go-4devs/config/provider/arg"
+	"github.com/go-4devs/config/validator"
+	"github.com/go-4devs/config/value"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/internal/registry"
+	"github.com/go-4devs/console/output"
+	"github.com/go-4devs/console/output/descriptor"
+	"github.com/go-4devs/console/setting"
 )
 
 //nolint:gochecknoinits
@@ -53,7 +53,7 @@ func Configure(_ context.Context, config config.Definition) error {
 			arg.String(ArgumentCommandName, "The command name", arg.Default(value.New("help"))),
 			option.String(OptionFormat, fmt.Sprintf("The output format (%s)", strings.Join(formats, ", ")),
 				option.Required,
-				option.Default(value.New(formats[0])),
+				option.Default(value.New(descriptor.FormatTxt)),
 				validator.Valid(
 					validator.NotBlank,
 					validator.Enum(formats...),
@@ -76,7 +76,7 @@ func Execute(ctx context.Context, in config.Provider, out output.Output) error {
 		return fmt.Errorf("find descriptor[%v]: %w", format, err)
 	}
 
-	cmd, err := registry.Find(name)
+	cmd, err := registry.Current(ctx).Find(name)
 	if err != nil {
 		return fmt.Errorf("find cmd: %w", err)
 	}
@@ -129,7 +129,7 @@ func Execute(ctx context.Context, in config.Provider, out output.Output) error {
 const tpl = `The <info>%[2]s</info> command displays help for a given command:
   <info>%[1]s %[2]s list</info>
 You can also output the help in other formats by using the <comment>--format</comment> option:
-  <info>%[1]s %[2]s --format=xml list</info>
+  <info>%[1]s %[2]s --format=txt list</info>
 To display the list of available commands, please use the <info>list</info> command.
 `
 

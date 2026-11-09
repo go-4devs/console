@@ -3,18 +3,21 @@ package descriptor
 import (
 	"context"
 	"errors"
+	"sort"
 	"sync"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/output"
 )
+
+const FormatTxt = "txt"
 
 var ErrDescriptorNotFound = errors.New("descriptor not found")
 
 //nolint:gochecknoglobals
 var (
 	descriptors = map[string]Descriptor{
-		"txt": &txt{},
+		FormatTxt: &txt{},
 	}
 	descriptorMu sync.Mutex
 )
@@ -67,11 +70,15 @@ func Find(name string) (Descriptor, error) {
 }
 
 func Descriptors() []string {
-	names := make([]string, 0, len(descriptors))
+	descriptorMu.Lock()
+	defer descriptorMu.Unlock()
 
+	names := make([]string, 0, len(descriptors))
 	for name := range descriptors {
 		names = append(names, name)
 	}
+
+	sort.Strings(names)
 
 	return names
 }

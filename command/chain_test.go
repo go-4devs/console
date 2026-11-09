@@ -5,11 +5,11 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/output"
 )
 
 func TestChainPrepare(t *testing.T) {

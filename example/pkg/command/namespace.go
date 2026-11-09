@@ -3,9 +3,9 @@ package command
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/output"
 )
 
 func Namespace() command.Command {

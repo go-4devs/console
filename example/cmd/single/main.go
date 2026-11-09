@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/example/pkg/command"
 )
 
 func main() {

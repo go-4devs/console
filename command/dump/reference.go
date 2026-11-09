@@ -4,17 +4,15 @@ import (
 	"context"
 	"fmt"
 
-	"gitoa.ru/go-4devs/config"
-	"gitoa.ru/go-4devs/config/definition"
-	"gitoa.ru/go-4devs/config/definition/option"
-	"gitoa.ru/go-4devs/config/provider/arg"
-	"gitoa.ru/go-4devs/console/command"
-	"gitoa.ru/go-4devs/console/errs"
-	"gitoa.ru/go-4devs/console/internal/registry"
-	"gitoa.ru/go-4devs/console/output"
+	"github.com/go-4devs/config"
+	"github.com/go-4devs/config/definition"
+	"github.com/go-4devs/config/definition/option"
+	"github.com/go-4devs/config/provider/arg"
+	"github.com/go-4devs/console/command"
+	"github.com/go-4devs/console/errs"
+	"github.com/go-4devs/console/internal/registry"
+	"github.com/go-4devs/console/output"
 )
-
-//go:generate go tool config config:generate
 
 const NameRefernce = "config:dump-reference"
 
@@ -25,12 +23,12 @@ func Command() command.Command {
 func RExecute(ctx context.Context, in config.Provider, out output.Output) error {
 	provs, ok := in.(config.Providers)
 	if !ok {
-		return fmt.Errorf("%w: expect %T got %T", errs.ErrWrongType, (config.Providers)(nil), in)
+		return fmt.Errorf("%w: expect %T got %T", errs.ErrWrongType, config.Providers(nil), in)
 	}
 
 	cfg := NewRConfigureConfig(in)
 
-	cmd, err := registry.Find(cfg.CommandName(ctx))
+	cmd, err := registry.Current(ctx).Find(cfg.CommandName(ctx))
 	if err != nil {
 		return fmt.Errorf("cmd:%w", err)
 	}

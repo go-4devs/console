@@ -4,13 +4,13 @@ import (
 	"context"
 	"os"
 
-	"gitoa.ru/go-4devs/config/provider/arg"
-	"gitoa.ru/go-4devs/config/provider/chain"
-	"gitoa.ru/go-4devs/config/provider/env"
-	"gitoa.ru/go-4devs/config/provider/memory"
-	"gitoa.ru/go-4devs/console"
-	"gitoa.ru/go-4devs/console/command/dump"
-	"gitoa.ru/go-4devs/console/example/pkg/command"
+	"github.com/go-4devs/config/provider/arg"
+	"github.com/go-4devs/config/provider/chain"
+	"github.com/go-4devs/config/provider/env"
+	"github.com/go-4devs/config/provider/memory"
+	"github.com/go-4devs/console"
+	"github.com/go-4devs/console/command/dump"
+	"github.com/go-4devs/console/example/pkg/command"
 )
 
 const (

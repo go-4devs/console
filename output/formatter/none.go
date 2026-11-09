@@ -1,6 +1,6 @@
 package formatter
 
-import "gitoa.ru/go-4devs/console/output/style"
+import "github.com/go-4devs/console/output/style"
 
 func None() *Formatter {
 	return New(
