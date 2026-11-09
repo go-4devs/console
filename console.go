@@ -39,7 +39,11 @@ func Run(ctx context.Context, cmd command.Command, in config.BindProvider, out o
 	if berr != nil {
 		printErr(ctx, in, out, berr)
 
-		return showHelp(ctx, cmd, in, output.Ansi(out))
+		if herr := showHelp(ctx, cmd, in, output.Ansi(out)); herr != nil {
+			return herr
+		}
+
+		return printedError{err: berr}
 	}
 
 	out = command.Verbose(ctx, in, out)
@@ -60,6 +64,13 @@ func Run(ctx context.Context, cmd command.Command, in config.BindProvider, out o
 
 	return nil
 }
+
+// printedError was already written to the output. App must not print it again.
+type printedError struct{ err error }
+
+func (e printedError) Error() string { return e.err.Error() }
+
+func (e printedError) Unwrap() error { return e.err }
 
 func showHelp(ctx context.Context, cmd command.Command, in config.Provider, out output.Output) error {
 	arr := &memory.Map{}

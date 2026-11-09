@@ -47,6 +47,35 @@ func TestShortFlagIsNotCommandName(t *testing.T) { //nolint:paralleltest // os.A
 	}
 }
 
+func TestBadArgExitsNonZero(t *testing.T) { //nolint:paralleltest // os.Args is process-wide
+	old := os.Args
+
+	t.Cleanup(func() { os.Args = old })
+
+	os.Args = []string{binConsole, "--bogus"}
+
+	var buf bytes.Buffer
+
+	code := 0
+
+	console.New(
+		console.WithExit(func(c int) { code = c }),
+		console.WithOutput(output.Buffer(&buf)),
+	).Execute(context.Background())
+
+	if code == 0 {
+		t.Fatalf("exit 0, output: %s", buf.String())
+	}
+
+	if strings.Count(buf.String(), "bogus") != 1 {
+		t.Fatalf("error printed %d times: %s", strings.Count(buf.String(), "bogus"), buf.String())
+	}
+
+	if !strings.Contains(buf.String(), "Lists commands") {
+		t.Fatalf("expected help after the error, got: %s", buf.String())
+	}
+}
+
 //nolint:lll
 func ExampleNew_help() {
 	ctx := context.Background()

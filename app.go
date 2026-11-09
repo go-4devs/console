@@ -2,6 +2,7 @@ package console
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -107,8 +108,13 @@ func (a *App) Execute(ctx context.Context) {
 func (a *App) exec(ctx context.Context, cmd command.Command) {
 	err := Run(ctx, cmd, a.in, a.out)
 	if err != nil {
-		a.printError(ctx, err)
+		if _, ok := errors.AsType[printedError](err); !ok {
+			a.printError(ctx, err)
+		}
+
 		a.exit(1)
+
+		return
 	}
 
 	a.exit(0)
