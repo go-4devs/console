@@ -2,7 +2,7 @@ module github.com/go-4devs/console
 
 go 1.27.3
 
-require github.com/go-4devs/config v0.0.17
+require github.com/go-4devs/config v0.0.18
 
 require (
 	golang.org/x/mod v0.42.0 // indirect
@@ -10,4 +10,7 @@ require (
 	golang.org/x/tools v0.52.0 // indirect
 )
 
-tool golang.org/x/tools/cmd/stringer
+tool (
+	github.com/go-4devs/config/cmd/config
+	golang.org/x/tools/cmd/stringer
+)

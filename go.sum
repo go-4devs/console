@@ -1,5 +1,5 @@
-github.com/go-4devs/config v0.0.17 h1:+XyNlP5suKFScJWxbB1cStbXdev0yqxU9X0QC5ui/LU=
-github.com/go-4devs/config v0.0.17/go.mod h1:XgIlF8un2/CRtr+uKHbRvj5ygkrFLAoGxFYtMW+DEe4=
+github.com/go-4devs/config v0.0.18 h1:KcLNPsukftSAF3RQgcxvO3nzrHkhmTu0V1o/DMdJK/A=
+github.com/go-4devs/config v0.0.18/go.mod h1:Q4Wa8yB0qjPeK0knghh1Xcu814F6IFkvBT0vPJkgAJk=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 golang.org/x/mod v0.42.0 h1:ICeL3t2L30ljSPHHxDnR4fqVcBt/zR2zJAb9juavmQg=

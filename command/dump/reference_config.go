@@ -4,6 +4,7 @@ package dump
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-4devs/config"
 )
 
@@ -33,7 +34,7 @@ type RConfigureConfig struct {
 	handle func(context.Context, error)
 }
 
-// readCommandName command name.
+// readCommandName reads command name.
 func (i RConfigureConfig) readCommandName(ctx context.Context) (v string, e error) {
 	val, err := i.Value(ctx, "command-name")
 	if err != nil {
@@ -45,12 +46,12 @@ func (i RConfigureConfig) readCommandName(ctx context.Context) (v string, e erro
 
 }
 
-// ReadCommandName command name.
+// ReadCommandName reads command name.
 func (i RConfigureConfig) ReadCommandName(ctx context.Context) (string, error) {
 	return i.readCommandName(ctx)
 }
 
-// CommandName command name.
+// CommandName returns command name.
 func (i RConfigureConfig) CommandName(ctx context.Context) string {
 	val, err := i.readCommandName(ctx)
 	if err != nil {
@@ -60,7 +61,7 @@ func (i RConfigureConfig) CommandName(ctx context.Context) string {
 	return val
 }
 
-// readFormat format.
+// readFormat reads format.
 func (i RConfigureConfig) readFormat(ctx context.Context) (v string, e error) {
 	val, err := i.Value(ctx, "format")
 	if err != nil {
@@ -73,12 +74,12 @@ func (i RConfigureConfig) readFormat(ctx context.Context) (v string, e error) {
 
 }
 
-// ReadFormat format.
+// ReadFormat reads format.
 func (i RConfigureConfig) ReadFormat(ctx context.Context) (string, error) {
 	return i.readFormat(ctx)
 }
 
-// Format format.
+// Format returns format.
 func (i RConfigureConfig) Format(ctx context.Context) string {
 	val, err := i.readFormat(ctx)
 	if err != nil {

@@ -14,6 +14,8 @@ import (
 	"github.com/go-4devs/console/output"
 )
 
+//go:generate go tool config config:generate
+
 const NameRefernce = "config:dump-reference"
 
 func Command() command.Command {
